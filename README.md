@@ -1,31 +1,71 @@
-# ShashinMori
+# ShashinMori API
 
-ShashinMori has two projects:
+ShashinMori API is the private backend for the Flutter web and Android clients. It accepts resumable uploads, stores originals on the Android host device, generates one retained preview per photo, writes ownership and metadata to Firestore, and serves authenticated gallery/image endpoints.
 
-- `shashinmori-api`: Fastify backend that receives uploads, stores originals on the Android host, generates retained previews, writes gallery metadata to Firestore, and serves authenticated gallery/image endpoints.
-- `shashinmori-app`: Flutter web + Android client that signs users in with Firebase Auth, uploads photos with tus, and reads the private gallery from the API.
+## What this service does
 
-## Project docs
+- accepts uploads over tus
+- authenticates every private request with Firebase ID tokens
+- stores originals in a Google Photos auto-backup folder on the Android device
+- generates retained compressed previews outside the purge directory
+- stores gallery metadata in Firestore
+- serves `/preview` and `/image` routes for the Flutter app
+- purges original files every 12 hours while keeping preview access working
 
-- Backend overview: `shashinmori-api/README.md`
-- Backend local setup: `shashinmori-api/docs/setup.md`
-- Backend Termux + Cloudflare deployment: `shashinmori-api/docs/termux-cloudflare-deployment.md`
-- Backend Google Photos device backup setup: `shashinmori-api/docs/google-photos-device-backup.md`
-- Flutter app overview: `shashinmori-app/README.md`
-- Flutter app local setup: `shashinmori-app/docs/setup.md`
-- Flutter app deployment: `shashinmori-app/docs/deployment.md`
+## What this service does not do
 
-## Current architecture
+- it does not use the Google Photos API
+- it does not support delete or download
+- it does not treat Google Photos cloud state as the app source of truth
 
-1. The Flutter app uploads a photo to the API with Firebase authentication.
-2. The backend stores the original inside `/sdcard/ShashinMori/<uid>/...`.
-3. The Google Photos Android app backs up that local folder on the Pixel device.
-4. The backend stores one retained compressed preview outside the purge directory.
-5. Firestore stores ownership, upload metadata, dimensions, and local availability state.
-6. The app shows the original while it still exists locally, then falls back to the retained preview after purge.
+## Documentation map
 
-## Important product constraints
+- Local setup: `docs/setup.md`
+- API reference: `docs/api.md`
+- Architecture: `docs/architecture.md`
+- Termux + Cloudflare deployment: `docs/termux-cloudflare-deployment.md`
+- Google Photos device backup setup: `docs/google-photos-device-backup.md`
+- Third-party client integration: `openapi/README.md`
 
-- Google Photos is treated as device-side backup only.
-- The app does not use the Google Photos API for gallery listing, delete, or download.
-- Delete and download are intentionally unsupported in both backend and Flutter.
+## Requirements
+
+- Node.js 20+
+- Firebase project with:
+  - Authentication
+  - Firestore
+  - service account access for the backend
+- Upstash Redis database
+- Android device with:
+  - Termux
+  - storage permission granted to Termux
+  - Google Photos installed and configured to back up `SYNC_FOLDER_PATH`
+
+## Core environment variables
+
+| Variable | Purpose |
+| --- | --- |
+| `PORT` | Fastify listen port, usually `3000`. |
+| `API_BASE_URL` | Public base URL for docs and generated links. |
+| `ALLOWED_ORIGINS` | Allowed browser origins for CORS. |
+| `FIREBASE_PROJECT_ID` | Firebase project ID. |
+| `FIREBASE_CLIENT_EMAIL` | Service account email. |
+| `FIREBASE_PRIVATE_KEY` | Service account private key with escaped newlines. |
+| `UPSTASH_REDIS_REST_URL` | Upstash REST URL for cache counters. |
+| `UPSTASH_REDIS_REST_TOKEN` | Upstash REST token. |
+| `UPSTASH_REDIS_TLS_URL` | `rediss://` URL for BullMQ. |
+| `UPLOAD_TEMP_DIR` | Temporary tus upload directory. |
+| `SYNC_FOLDER_PATH` | Local originals directory monitored by Google Photos. |
+| `PREVIEW_DIR` | Retained preview directory. |
+
+Full examples live in `.env.example`.
+
+## Quick start
+
+1. Copy `.env.example` to `.env`.
+2. Fill Firebase, Upstash, and local filesystem values.
+3. Run `npm install`.
+4. Run `npm run build`.
+5. Run the API with `npm run start`.
+6. Run workers with `npm run start:workers`.
+
+For local development and full setup, use `docs/setup.md`.

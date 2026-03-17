@@ -1,4 +1,7 @@
-firestore.*
-
-shashinmori-app
-shashinmori-api
+node_modules/
+dist/
+.env
+npm-debug.log*
+docs/
+*.lock
+*-lock.json
