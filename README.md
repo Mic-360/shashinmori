@@ -1,31 +1,42 @@
-# ShashinMori
+# ShashinMori App
 
-ShashinMori has two projects:
+ShashinMori App is the Flutter client for the ShashinMori workflow. It runs on web and Android, signs users in with Firebase Auth, uploads images with tus, and shows a private gallery backed by the ShashinMori API.
 
-- `shashinmori-api`: Fastify backend that receives uploads, stores originals on the Android host, generates retained previews, writes gallery metadata to Firestore, and serves authenticated gallery/image endpoints.
-- `shashinmori-app`: Flutter web + Android client that signs users in with Firebase Auth, uploads photos with tus, and reads the private gallery from the API.
+## What the app does
 
-## Project docs
+- signs users in with Google through Firebase Auth
+- uploads images from web and Android
+- polls upload status until the backend marks the photo `available`
+- lists only the current user's photos
+- displays a retained preview after the backend purges the local original
 
-- Backend overview: `shashinmori-api/README.md`
-- Backend local setup: `shashinmori-api/docs/setup.md`
-- Backend Termux + Cloudflare deployment: `shashinmori-api/docs/termux-cloudflare-deployment.md`
-- Backend Google Photos device backup setup: `shashinmori-api/docs/google-photos-device-backup.md`
-- Flutter app overview: `shashinmori-app/README.md`
-- Flutter app local setup: `shashinmori-app/docs/setup.md`
-- Flutter app deployment: `shashinmori-app/docs/deployment.md`
+## What the app does not do
 
-## Current architecture
+- it does not talk to Google Photos directly
+- it does not support delete
+- it does not support download
 
-1. The Flutter app uploads a photo to the API with Firebase authentication.
-2. The backend stores the original inside `/sdcard/ShashinMori/<uid>/...`.
-3. The Google Photos Android app backs up that local folder on the Pixel device.
-4. The backend stores one retained compressed preview outside the purge directory.
-5. Firestore stores ownership, upload metadata, dimensions, and local availability state.
-6. The app shows the original while it still exists locally, then falls back to the retained preview after purge.
+## Documentation map
 
-## Important product constraints
+- Local setup: `docs/setup.md`
+- Deployment guide: `docs/deployment.md`
 
-- Google Photos is treated as device-side backup only.
-- The app does not use the Google Photos API for gallery listing, delete, or download.
-- Delete and download are intentionally unsupported in both backend and Flutter.
+## Runtime configuration
+
+The app needs:
+
+- `API_BASE_URL` from `--dart-define`
+- Firebase web config in `.env`
+- `android/app/google-services.json` for Android builds
+
+`lib/firebase_options.dart` reads Firebase values from `.env` via `flutter_dotenv`, so Firebase config is not hardcoded in source.
+
+## Quick start
+
+1. Copy `.env.example` to `.env`.
+2. Fill in the Firebase web values.
+3. Add `android/app/google-services.json`.
+4. Run `flutter pub get`.
+5. Run `flutter run -d chrome --dart-define=API_BASE_URL=http://127.0.0.1:3000` or build for Android/web.
+
+For the complete setup flow, use `docs/setup.md`.
