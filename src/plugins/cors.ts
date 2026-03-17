@@ -3,21 +3,41 @@ import cors from "@fastify/cors";
 import type { FastifyInstance } from "fastify";
 import { config } from "../config/env.js";
 
+function normalizeOrigin(origin: string) {
+  return origin.trim().replace(/\/+$/, "");
+}
+
 function parseAllowedOrigins() {
   if (config.allowedOrigins.trim() === "*") {
-    return true;
+    return true as const;
   }
 
-  return config.allowedOrigins
-    .split(",")
-    .map((origin: string) => origin.trim())
-    .filter((origin: string) => origin.length > 0);
+  return new Set(
+    config.allowedOrigins
+      .split(",")
+      .map((origin: string) => normalizeOrigin(origin))
+      .filter((origin: string) => origin.length > 0)
+  );
 }
 
 export default fp(async function corsPlugin(app: FastifyInstance) {
+  const allowedOrigins = parseAllowedOrigins();
+
   await app.register(cors, {
-    origin: parseAllowedOrigins(),
-    methods: ["GET", "POST", "DELETE", "OPTIONS", "PATCH"],
+    origin(origin, callback) {
+      if (!origin) {
+        callback(null, true);
+        return;
+      }
+
+      if (allowedOrigins === true) {
+        callback(null, true);
+        return;
+      }
+
+      callback(null, allowedOrigins.has(normalizeOrigin(origin)));
+    },
+    methods: ["GET", "POST", "OPTIONS", "PATCH", "HEAD"],
     allowedHeaders: [
       "Authorization",
       "Content-Type",
