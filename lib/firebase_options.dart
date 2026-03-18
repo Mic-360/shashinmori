@@ -1,9 +1,26 @@
 import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
 import 'package:flutter/foundation.dart'
     show defaultTargetPlatform, kIsWeb, TargetPlatform;
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class DefaultFirebaseOptions {
+  static const String _firebaseApiKey =
+      'AIzaSyD3vKKsPI9sBD2By5XZtzI_WLW7kkkRgJg';
+  static const String _firebaseAppId =
+      '1:753164470775:web:95ad35d463d02cdbdfc6f2';
+  static const String _firebaseMessagingSenderId = '753164470775';
+  static const String _firebaseProjectId = 'shashinmori-c82a1';
+  static const String _firebaseAuthDomain = 'shashinmori-c82a1.firebaseapp.com';
+  static const String _firebaseStorageBucket =
+      'shashinmori-c82a1.firebasestorage.app';
+
+  static FirebaseOptions get android => FirebaseOptions(
+        apiKey: _firebaseApiKey,
+        appId: _firebaseAppId,
+        messagingSenderId: _firebaseMessagingSenderId,
+        projectId: _firebaseProjectId,
+        storageBucket: _firebaseStorageBucket,
+      );
+
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
       return web;
@@ -20,29 +37,11 @@ class DefaultFirebaseOptions {
   }
 
   static FirebaseOptions get web => FirebaseOptions(
-        apiKey: _required('FIREBASE_API_KEY'),
-        appId: _required('FIREBASE_APP_ID'),
-        messagingSenderId: _required('FIREBASE_MESSAGING_SENDER_ID'),
-        projectId: _required('FIREBASE_PROJECT_ID'),
-        authDomain: _required('FIREBASE_AUTH_DOMAIN'),
-        storageBucket: _required('FIREBASE_STORAGE_BUCKET'),
+        apiKey: _firebaseApiKey,
+        appId: _firebaseAppId,
+        messagingSenderId: _firebaseMessagingSenderId,
+        projectId: _firebaseProjectId,
+        authDomain: _firebaseAuthDomain,
+        storageBucket: _firebaseStorageBucket,
       );
-
-  static FirebaseOptions get android => FirebaseOptions(
-        apiKey: _required('FIREBASE_API_KEY'),
-        appId: _required('FIREBASE_APP_ID'),
-        messagingSenderId: _required('FIREBASE_MESSAGING_SENDER_ID'),
-        projectId: _required('FIREBASE_PROJECT_ID'),
-        storageBucket: _required('FIREBASE_STORAGE_BUCKET'),
-      );
-
-  static String _required(String key) {
-    final value = dotenv.env[key];
-    if (value == null || value.isEmpty || value.startsWith('replace-with-')) {
-      throw StateError(
-        'Missing Firebase env value for $key. Update shashinmori-app/.env before running the app.',
-      );
-    }
-    return value;
-  }
 }
