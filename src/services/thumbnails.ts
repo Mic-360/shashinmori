@@ -1,6 +1,6 @@
 import { mkdir, stat, writeFile } from "node:fs/promises";
 import path from "node:path";
-import sharp from "sharp";
+import { Jimp } from "jimp";
 import { config } from "../config/env.js";
 
 export interface LocalImageMetadata {
@@ -18,35 +18,32 @@ export interface LocalImageMetadata {
 }
 
 export async function inspectLocalImage(sourcePath: string): Promise<LocalImageMetadata> {
-  const [imageMetadata, fileStat] = await Promise.all([
-    sharp(sourcePath).metadata(),
+  const [image, fileStat] = await Promise.all([
+    Jimp.read(sourcePath),
     stat(sourcePath)
   ]);
 
+  const extension = path.extname(sourcePath).toLowerCase();
+  const format = extension ? extension.slice(1) : undefined;
+
   return {
-    width: imageMetadata.width ?? 1,
-    height: imageMetadata.height ?? 1,
+    width: image.bitmap.width || 1,
+    height: image.bitmap.height || 1,
     sizeBytes: fileStat.size,
     metadata: {
-      format: imageMetadata.format,
-      space: imageMetadata.space,
-      channels: imageMetadata.channels,
-      density: imageMetadata.density,
-      hasAlpha: imageMetadata.hasAlpha,
-      orientation: imageMetadata.orientation
+      format,
+      hasAlpha: Boolean(image.hasAlpha())
     }
   };
 }
 
 export async function generatePreview(photoId: string, userId: string, sourcePath: string): Promise<string> {
-  const outputPath = path.join(config.previewDir, userId, `${photoId}.webp`);
+  const outputPath = path.join(config.previewDir, userId, `${photoId}.jpg`);
 
   await mkdir(path.dirname(outputPath), { recursive: true });
-  const buffer = await sharp(sourcePath)
-    .rotate()
-    .resize(1280, 1280, { fit: "inside", withoutEnlargement: true })
-    .webp({ quality: 72 })
-    .toBuffer();
+  const image = await Jimp.read(sourcePath);
+  image.scaleToFit({ w: 1280, h: 1280 });
+  const buffer = await image.getBuffer("image/jpeg");
 
   await writeFile(outputPath, buffer);
   return outputPath;

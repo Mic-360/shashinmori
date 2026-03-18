@@ -63,6 +63,19 @@ function serializePhoto(photo: {
   };
 }
 
+function getPreviewContentType(filePath: string): string {
+  const extension = path.extname(filePath).toLowerCase();
+  if (extension === ".jpg" || extension === ".jpeg") {
+    return "image/jpeg";
+  }
+
+  if (extension === ".png") {
+    return "image/png";
+  }
+
+  return "application/octet-stream";
+}
+
 async function getOwnedPhoto(app: FastifyInstance, photoId: string, uid: string) {
   const snapshot = await photosCollection().doc(photoId).get();
   const photo = snapshot.data();
@@ -98,7 +111,7 @@ async function resolveImagePath(photo: {
   if (await fileExists(photo.previewPath)) {
     return {
       filePath: photo.previewPath,
-      contentType: "image/webp",
+      contentType: getPreviewContentType(photo.previewPath),
       contentDisposition: "inline"
     };
   }
