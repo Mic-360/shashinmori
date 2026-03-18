@@ -131,6 +131,16 @@ export async function registerUploadRoutes(app: FastifyInstance): Promise<void> 
         throw new AppError("UNAUTHORIZED", "Upload metadata userId must match authenticated user", 401);
       }
     }
+    
+    const origin = request.headers.origin;
+    if (origin) {
+      reply.raw.setHeader("Access-Control-Allow-Origin", origin);
+      reply.raw.setHeader("Access-Control-Allow-Credentials", "true");
+      reply.raw.setHeader(
+        "Access-Control-Expose-Headers",
+        "Location, Upload-Offset, Upload-Length, Tus-Resumable, Tus-Version, Tus-Extension, Tus-Max-Size, X-Upload-Id"
+      );
+    }
 
     reply.hijack();
     await tusServer.handle(request.raw, reply.raw);

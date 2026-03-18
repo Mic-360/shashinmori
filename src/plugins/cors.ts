@@ -46,6 +46,16 @@ export default fp(async function corsPlugin(app: FastifyInstance) {
       "Upload-Metadata",
       "Tus-Resumable"
     ],
+    exposedHeaders: [
+      "Location",
+      "Upload-Offset",
+      "Upload-Length",
+      "Tus-Resumable",
+      "Tus-Version",
+      "Tus-Extension",
+      "Tus-Max-Size",
+      "X-Upload-Id"
+    ],
     credentials: true,
     maxAge: 86_400
   });
