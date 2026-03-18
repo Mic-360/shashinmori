@@ -51,6 +51,27 @@ function getUploadMetadata(upload: Upload): Record<string, string | null> {
   return upload.metadata ?? {};
 }
 
+function setTusCorsHeaders(reply: FastifyReply, origin?: string) {
+  if (origin) {
+    reply.header("Access-Control-Allow-Origin", origin);
+    reply.header("Access-Control-Allow-Credentials", "true");
+  }
+
+  reply.header(
+    "Access-Control-Expose-Headers",
+    "Location, Upload-Offset, Upload-Length, Tus-Resumable, Tus-Version, Tus-Extension, Tus-Max-Size, X-Upload-Id"
+  );
+  reply.header(
+    "Access-Control-Allow-Headers",
+    "Authorization, Content-Type, Upload-Offset, Upload-Length, Upload-Metadata, Tus-Resumable"
+  );
+  reply.header("Access-Control-Allow-Methods", "POST, HEAD, PATCH, OPTIONS");
+  reply.header("Tus-Resumable", "1.0.0");
+  reply.header("Tus-Version", "1.0.0");
+  reply.header("Tus-Max-Size", String(config.maxUploadSizeBytes));
+  reply.header("Tus-Extension", "creation,creation-with-upload,expiration");
+}
+
 export async function registerUploadRoutes(app: FastifyInstance): Promise<void> {
   const tusServer = new TusServer({
     path: "/v1/uploads",
@@ -121,6 +142,14 @@ export async function registerUploadRoutes(app: FastifyInstance): Promise<void> 
   });
 
   const tusHandler = async (request: FastifyRequest, reply: FastifyReply) => {
+    const origin = request.headers.origin;
+
+    if (request.method === "OPTIONS") {
+      setTusCorsHeaders(reply, origin);
+      await reply.code(204).send();
+      return;
+    }
+
     await app.requireAuth(request, reply);
     (request.raw as TusIncomingMessage).authenticatedUser = request.user;
 
@@ -131,16 +160,8 @@ export async function registerUploadRoutes(app: FastifyInstance): Promise<void> 
         throw new AppError("UNAUTHORIZED", "Upload metadata userId must match authenticated user", 401);
       }
     }
-    
-    const origin = request.headers.origin;
-    if (origin) {
-      reply.raw.setHeader("Access-Control-Allow-Origin", origin);
-      reply.raw.setHeader("Access-Control-Allow-Credentials", "true");
-      reply.raw.setHeader(
-        "Access-Control-Expose-Headers",
-        "Location, Upload-Offset, Upload-Length, Tus-Resumable, Tus-Version, Tus-Extension, Tus-Max-Size, X-Upload-Id"
-      );
-    }
+
+    setTusCorsHeaders(reply, origin);
 
     reply.hijack();
     await tusServer.handle(request.raw, reply.raw);
