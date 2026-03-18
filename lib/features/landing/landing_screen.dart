@@ -1,9 +1,13 @@
 import 'dart:math' as math;
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+import '../../shared/widgets/animated_background.dart';
 
 class LandingScreen extends StatefulWidget {
   const LandingScreen({super.key});
@@ -54,6 +58,7 @@ class _LandingScreenState extends State<LandingScreen>
     return Scaffold(
       body: Stack(
         children: [
+          const Positioned.fill(child: AnimatedBackground()),
           CustomScrollView(
             controller: _scrollController,
             slivers: [
@@ -95,7 +100,7 @@ class _LandingScreenState extends State<LandingScreen>
               child: Row(
                 children: [
                   SvgPicture.asset(
-                    'web/favicon.svg',
+                    'assets/favicon.svg',
                     width: 32,
                     height: 32,
                   ),
@@ -132,27 +137,9 @@ class _HeroSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
     return Container(
       constraints: const BoxConstraints(minHeight: 600),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: isDark
-              ? [
-                  const Color(0xFF0D2818),
-                  const Color(0xFF111512),
-                  const Color(0xFF1A1C0E),
-                ]
-              : [
-                  const Color(0xFFE8F5E9),
-                  const Color(0xFFFAFDF7),
-                  const Color(0xFFFFF8E1),
-                ],
-        ),
-      ),
+      // Background removed to show AnimatedBackground
       child: SafeArea(
         bottom: false,
         child: LayoutBuilder(
@@ -216,7 +203,7 @@ class _HeroSection extends StatelessWidget {
             ],
           ),
           child: SvgPicture.asset(
-            'web/favicon.svg',
+            'assets/favicon.svg',
             width: 300,
             height: 300,
           ),
@@ -249,10 +236,10 @@ class _HeroSection extends StatelessWidget {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.eco, size: 16, color: cs.primary),
+                Icon(Icons.storage, size: 16, color: cs.primary),
                 const SizedBox(width: 8),
                 Text(
-                  'Your Family\'s Photo Forest',
+                  'Unlimited Original Quality Storage',
                   style: tt.labelLarge?.copyWith(color: cs.primary),
                 ),
               ],
@@ -260,17 +247,19 @@ class _HeroSection extends StatelessWidget {
           ),
           const SizedBox(height: 24),
           Text(
-            'Every photo\nfinds its place\nin the forest.',
-            style: tt.displayMedium?.copyWith(
+            'Revive your old\nPixel device.',
+            style: tt.displayLarge?.copyWith(
               height: 1.1,
+              letterSpacing: -1.5,
+              fontWeight: FontWeight.bold,
               color: cs.onSurface,
             ),
             textAlign: isWide ? TextAlign.start : TextAlign.center,
           ),
           const SizedBox(height: 20),
           Text(
-            'ShashinMori keeps your family memories safe, organized, '
-            'and beautifully preserved across all your devices.',
+            'Send your photos to a backend running on your old Pixel '
+            '(or Pixel Experience ROM) to utilize its unlimited Google Photos storage.',
             style: tt.bodyLarge?.copyWith(
               color: cs.onSurface.withValues(alpha: 0.7),
               height: 1.6,
@@ -286,7 +275,14 @@ class _HeroSection extends StatelessWidget {
             children: [
               FilledButton.icon(
                 onPressed: onGetStarted,
-                icon: const Icon(Icons.arrow_forward_rounded),
+                style: FilledButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 20),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(24),
+                  ),
+                  textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                ),
+                icon: const Icon(Icons.arrow_forward_rounded, size: 24),
                 label: const Text('Get started'),
               ),
               OutlinedButton.icon(
@@ -296,7 +292,14 @@ class _HeroSection extends StatelessWidget {
                     duration: const Duration(milliseconds: 600),
                   );
                 },
-                icon: const Icon(Icons.info_outline),
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 20),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(24),
+                  ),
+                  textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                ),
+                icon: const Icon(Icons.info_outline, size: 24),
                 label: const Text('Learn more'),
               ),
             ],
@@ -320,38 +323,38 @@ class _FeaturesSection extends StatelessWidget {
 
     final features = [
       _FeatureData(
-        icon: Icons.cloud_upload_outlined,
-        title: 'Resilient uploads',
+        icon: Icons.upload_file_outlined,
+        title: 'Background Uploads',
         description:
-            'TUS-based resumable uploads that survive network drops. '
-            'Your photos always arrive safely.',
+            'Takes your photos and sends them to the backend running natively '
+            'on your old Pixel or Pixel Experience ROM phone.',
         color: cs.primary,
         containerColor: cs.primaryContainer,
       ),
       _FeatureData(
-        icon: Icons.photo_library_outlined,
-        title: 'Beautiful gallery',
+        icon: Icons.delete_sweep_outlined,
+        title: 'Auto Purge',
         description:
-            'Browse your memories in a Google Photos-inspired masonry grid. '
-            'Fast, responsive, and delightful.',
+            'Stores images locally on the phone, then purges the originals '
+            'automatically after Google Photos finishes backing them up.',
         color: cs.tertiary,
         containerColor: cs.tertiaryContainer,
       ),
       _FeatureData(
-        icon: Icons.devices_outlined,
-        title: 'Everywhere you are',
+        icon: Icons.preview_outlined,
+        title: 'Preview Gallery',
         description:
-            'Works seamlessly on Android, desktop browsers, and mobile web. '
-            'One app, every screen.',
+            'Provides a lightweight preview version of the images '
+            'so you can always keep track of what you\'ve uploaded.',
         color: cs.secondary,
         containerColor: cs.secondaryContainer,
       ),
       _FeatureData(
-        icon: Icons.lock_outlined,
-        title: 'Family-first privacy',
+        icon: Icons.supervised_user_circle_outlined,
+        title: 'Multi-User Support',
         description:
-            'Firebase authentication keeps your memories private. '
-            'Only your family sees your photos.',
+            'Keeps records in Firestore and separates multiple users '
+            'so everyone\'s uploaded photos remain perfectly private.',
         color: cs.error,
         containerColor: cs.errorContainer,
       ),
@@ -365,7 +368,7 @@ class _FeaturesSection extends StatelessWidget {
       child: Column(
         children: [
           Text(
-            'Built for families who care',
+            'Maximize your hardware',
             style: tt.headlineLarge,
             textAlign: TextAlign.center,
           ),
@@ -374,7 +377,7 @@ class _FeaturesSection extends StatelessWidget {
             constraints: const BoxConstraints(maxWidth: 600),
             child: Text(
               'Simple, secure, and beautiful photo management '
-              'that respects your privacy.',
+              'that utilizes google photos unlimited storage.',
               style: tt.bodyLarge?.copyWith(
                 color: cs.onSurface.withValues(alpha: 0.6),
               ),
@@ -433,35 +436,60 @@ class _FeatureCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tt = Theme.of(context).textTheme;
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              width: 56,
-              height: 56,
-              decoration: BoxDecoration(
-                color: data.containerColor,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Icon(data.icon, color: data.color, size: 28),
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
+    return Container(
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF1A1F1C).withValues(alpha: 0.6) : Colors.white.withValues(alpha: 0.6),
+        borderRadius: BorderRadius.circular(32),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: isDark ? 0.05 : 0.4),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.08),
+            blurRadius: 24,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(32),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+          child: Padding(
+            padding: const EdgeInsets.all(32),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  width: 64,
+                  height: 64,
+                  decoration: BoxDecoration(
+                    color: data.containerColor,
+                    borderRadius: BorderRadius.circular(24),
+                  ),
+                  child: Icon(data.icon, color: data.color, size: 32),
+                ),
+                const SizedBox(height: 24),
+                Text(
+                  data.title, 
+                  style: tt.headlineSmall?.copyWith(fontWeight: FontWeight.w600),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  data.description,
+                  style: tt.bodyLarge?.copyWith(
+                    color: Theme.of(context)
+                        .colorScheme
+                        .onSurface
+                        .withValues(alpha: 0.7),
+                    height: 1.6,
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 20),
-            Text(data.title, style: tt.titleMedium),
-            const SizedBox(height: 8),
-            Text(
-              data.description,
-              style: tt.bodyMedium?.copyWith(
-                color: Theme.of(context)
-                    .colorScheme
-                    .onSurface
-                    .withValues(alpha: 0.6),
-                height: 1.5,
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );
@@ -476,20 +504,10 @@ class _MascotStorySection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final isWide = MediaQuery.of(context).size.width >= 900;
     final isMedium = MediaQuery.of(context).size.width >= 600;
 
     return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: isDark
-              ? [const Color(0xFF0D2818), const Color(0xFF111512)]
-              : [const Color(0xFFE8F5E9), const Color(0xFFFAFDF7)],
-        ),
-      ),
       padding: EdgeInsets.symmetric(
         horizontal: isWide ? 80 : (isMedium ? 40 : 24),
         vertical: 80,
@@ -531,7 +549,7 @@ class _MascotStorySection extends StatelessWidget {
         borderRadius: BorderRadius.circular(32),
       ),
       child: SvgPicture.asset(
-        'web/favicon.svg',
+        'assets/favicon.svg',
         width: 200,
         height: 200,
       ),
@@ -552,47 +570,49 @@ class _MascotStorySection extends StatelessWidget {
             borderRadius: BorderRadius.circular(16),
           ),
           child: Text(
-            'The story',
+            'The concept',
             style: tt.labelMedium?.copyWith(color: cs.onTertiaryContainer),
           ),
         ),
         const SizedBox(height: 16),
         Text(
-          'The tale of Mori,\nthe Photo Forest Fairy',
-          style: tt.headlineLarge?.copyWith(height: 1.2),
+          'Give your old devices\na second life',
+          style: tt.displaySmall?.copyWith(
+            height: 1.1,
+            fontWeight: FontWeight.bold,
+            letterSpacing: -1.0,
+          ),
         ),
         const SizedBox(height: 24),
         _storyParagraph(
           context,
-          'Deep within the digital realm, where pixels dance like fireflies '
-          'and memories flow like gentle streams, there lives a kind fairy '
-          'named Mori \u2014 the guardian of the Photo Forest.',
+          'Sitting in a drawer, gathering dust, your old Pixel device '
+          'still possesses a magical superpower: unlimited, original '
+          'quality backups to Google Photos.',
         ),
         const SizedBox(height: 16),
         _storyParagraph(
           context,
-          'Long ago, when families began capturing moments with their cameras, '
-          'these precious memories would scatter like autumn leaves in the wind '
-          '\u2014 lost in forgotten folders, trapped in old devices, fading with time. '
-          'Mori saw the sadness this brought and decided to create something magical.',
+          'ShashinMori acts as the bridge. By running our backend on your '
+          'Pixel device (or any phone with a Pixel Experience ROM), you can '
+          'seamlessly offload your current phone\'s heavy photo library directly '
+          'to your old faithful companion.',
         ),
         const SizedBox(height: 16),
         _storyParagraph(
           context,
-          'She planted the first Memory Tree from a single family photograph. '
-          'As more photos were entrusted to her care, the forest grew. Each '
-          'photograph became a seed, and each seed grew into a luminous tree '
-          'whose leaves shimmered with the colors of the captured moment.',
+          'The process is completely hands-off. The backend stores the high-resolution '
+          'image locally just long enough for the Google Photos app to back it up. '
+          'Once the backup is confirmed, the original file is purged to free up space '
+          'on the device.',
         ),
         const SizedBox(height: 16),
         _storyParagraph(
           context,
-          'Now, Mori tends to thousands of Memory Trees, each one preserving '
-          'a family\'s most cherished moments. She ensures no photograph is '
-          'ever lost, no memory ever fades. When you upload a photo to '
-          'ShashinMori, Mori carefully plants it in the perfect spot in her '
-          'forest, where the light catches it just right and it can grow '
-          'alongside your other memories \u2014 safe and beautiful, forever.',
+          'To ensure you never lose track of your memories, a lightweight preview '
+          'is generated and kept available in the app. Backed by Firestore, each '
+          'user gets their own isolated environment, ensuring that your photos '
+          'stay yours, and your unlimited storage can be safely shared with family.',
         ),
         const SizedBox(height: 24),
         Container(
@@ -606,7 +626,7 @@ class _MascotStorySection extends StatelessWidget {
           ),
           child: Text(
             'ShashinMori (\u5199\u771f\u68ee\u308a) \u2014 '
-            'Where every photo finds its place in the forest.',
+            'Your personal gateway to unlimited memories.',
             style: tt.titleSmall?.copyWith(
               fontStyle: FontStyle.italic,
               color: cs.onSurface.withValues(alpha: 0.8),
@@ -641,6 +661,7 @@ class _ApiDocsSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final tt = Theme.of(context).textTheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final isWide = MediaQuery.of(context).size.width >= 900;
     final isMedium = MediaQuery.of(context).size.width >= 600;
 
@@ -790,14 +811,30 @@ class _ApiDocsSection extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 32),
-                  Card(
-                    color: cs.surfaceContainerHigh,
-                    child: Padding(
-                      padding: const EdgeInsets.all(24),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
+                  Container(
+                    decoration: BoxDecoration(
+                      color: isDark ? const Color(0xFF1A1F1C).withValues(alpha: 0.6) : Colors.white.withValues(alpha: 0.6),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: isDark ? 0.05 : 0.4),
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.1),
+                          blurRadius: 20,
+                        ),
+                      ],
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(16),
+                      child: BackdropFilter(
+                        filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+                        child: Padding(
+                          padding: const EdgeInsets.all(24),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
                             children: [
                               Icon(Icons.info_outline, color: cs.primary,
                                   size: 20),
@@ -829,8 +866,10 @@ class _ApiDocsSection extends StatelessWidget {
                       ),
                     ),
                   ),
-                ],
+                ),
               ),
+            ],
+          ),
             ),
           ),
         ],
@@ -893,14 +932,32 @@ class _ApiGroupCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tt = Theme.of(context).textTheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
+    return Container(
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF1A1F1C).withValues(alpha: 0.6) : Colors.white.withValues(alpha: 0.6),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: isDark ? 0.05 : 0.4),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.1),
+            blurRadius: 20,
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
               children: [
                 Container(
                   width: 40,
@@ -920,7 +977,9 @@ class _ApiGroupCard extends StatelessWidget {
           ],
         ),
       ),
-    );
+    ),
+  ),
+);
   }
 }
 
@@ -1043,7 +1102,7 @@ class _FooterSection extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF0D2818) : const Color(0xFF1B3A2D),
+        color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.6),
       ),
       padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 64),
       child: Center(
@@ -1051,24 +1110,28 @@ class _FooterSection extends StatelessWidget {
           constraints: const BoxConstraints(maxWidth: 800),
           child: Column(
             children: [
-              SvgPicture.asset(
-                'web/favicon.svg',
-                width: 64,
-                height: 64,
-                colorFilter: const ColorFilter.mode(
-                  Color(0xFFA5D6A7),
-                  BlendMode.srcIn,
+              Container(
+                width: 80,
+                height: 80,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFA5D6A7).withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(28),
+                ),
+                child: const Icon(
+                  Icons.backup_rounded,
+                  size: 40,
+                  color: Color(0xFFA5D6A7),
                 ),
               ),
               const SizedBox(height: 20),
               Text(
-                'Ready to grow your forest?',
+                'Ready to reclaim your storage?',
                 style: tt.headlineMedium?.copyWith(color: Colors.white),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 12),
               Text(
-                'Start preserving your family\'s most precious moments today.',
+                'Start offloading your photos to your personal Pixel server today.',
                 style: tt.bodyLarge?.copyWith(
                   color: Colors.white.withValues(alpha: 0.7),
                 ),
@@ -1081,19 +1144,41 @@ class _FooterSection extends StatelessWidget {
                   backgroundColor: const Color(0xFFA5D6A7),
                   foregroundColor: const Color(0xFF002106),
                 ),
-                icon: const Icon(Icons.eco),
-                label: const Text('Plant your first memory'),
+                icon: const Icon(Icons.cloud_upload),
+                label: const Text('Start Uploading'),
               ),
               const SizedBox(height: 48),
               Divider(color: Colors.white.withValues(alpha: 0.15)),
               const SizedBox(height: 24),
               Text(
                 '\u00a9 ShashinMori \u2014 '
-                'Built with Flutter, Fastify & Firebase',
+                'Built with 💖 by bhaumic',
                 style: tt.bodySmall?.copyWith(
                   color: Colors.white.withValues(alpha: 0.4),
                 ),
                 textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 24),
+              // GitHub Logo linked to URL
+              MouseRegion(
+                cursor: SystemMouseCursors.click,
+                child: GestureDetector(
+                  onTap: () async {
+                    final uri = Uri.parse('https://github.com/mic-360');
+                    if (await canLaunchUrl(uri)) {
+                      await launchUrl(uri);
+                    }
+                  },
+                  child: SvgPicture.network(
+                    'https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg',
+                    width: 28,
+                    height: 28,
+                    colorFilter: const ColorFilter.mode(
+                      Colors.white54,
+                      BlendMode.srcIn,
+                    ),
+                  ),
+                ),
               ),
             ],
           ),

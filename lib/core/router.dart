@@ -236,7 +236,7 @@ class _ProfileScreen extends ConsumerWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   SvgPicture.asset(
-                    'web/favicon.svg',
+                    'assets/favicon.svg',
                     width: 16,
                     height: 16,
                     colorFilter: ColorFilter.mode(
@@ -282,7 +282,8 @@ class _ProfileTile extends StatelessWidget {
     final tt = Theme.of(context).textTheme;
 
     return ListTile(
-      leading: Icon(icon, color: iconColor ?? cs.onSurface.withValues(alpha: 0.7)),
+      leading:
+          Icon(icon, color: iconColor ?? cs.onSurface.withValues(alpha: 0.7)),
       title: Text(title, style: tt.bodyLarge),
       subtitle: Text(
         subtitle,

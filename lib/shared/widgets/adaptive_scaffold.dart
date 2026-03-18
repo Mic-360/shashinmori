@@ -68,7 +68,7 @@ class AdaptiveScaffold extends StatelessWidget {
                   leading: Padding(
                     padding: const EdgeInsets.only(top: 8, bottom: 16),
                     child: SvgPicture.asset(
-                      'web/favicon.svg',
+                      'assets/favicon.svg',
                       width: 32,
                       height: 32,
                     ),
@@ -106,7 +106,7 @@ class AdaptiveScaffold extends StatelessWidget {
                     child: Row(
                       children: [
                         SvgPicture.asset(
-                          'web/favicon.svg',
+                          'assets/favicon.svg',
                           width: 36,
                           height: 36,
                         ),
