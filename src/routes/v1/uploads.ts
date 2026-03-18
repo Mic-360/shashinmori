@@ -1,14 +1,12 @@
-import path from "node:path";
-import type { IncomingMessage } from "node:http";
-import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { FileStore } from "@tus/file-store";
 import { Server as TusServer } from "@tus/server";
 import type { Upload } from "@tus/utils";
+import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { Timestamp } from "firebase-admin/firestore";
+import path from "node:path";
 import { config } from "../../config/env.js";
 import { uploadQueue } from "../../queues/definitions.js";
 import { photosCollection, uploadsCollection } from "../../services/firestore.js";
-import type { AuthenticatedUser } from "../../types/api.js";
 import { AppError, createSuccess } from "../../types/api.js";
 
 const errorSchema = {
@@ -41,10 +39,6 @@ function parseTusMetadata(headerValue: string | undefined): Record<string, strin
     result[rawKey] = Buffer.from(rawValue, "base64").toString("utf8");
     return result;
   }, {});
-}
-
-interface TusIncomingMessage extends IncomingMessage {
-  authenticatedUser?: AuthenticatedUser;
 }
 
 function getUploadMetadata(upload: Upload): Record<string, string | null> {
@@ -86,7 +80,7 @@ export async function registerUploadRoutes(app: FastifyInstance): Promise<void> 
     async onUploadCreate(request, upload) {
       const metadata = getUploadMetadata(upload);
 
-      const authUser = (request as unknown as TusIncomingMessage).authenticatedUser!;
+      const userId = metadata.userId as string;
 
       const filename = metadata.filename?.trim();
       const mimeType = metadata.mimeType?.trim();
@@ -98,7 +92,7 @@ export async function registerUploadRoutes(app: FastifyInstance): Promise<void> 
       await uploadsCollection().doc(uploadId).set({
         uploadId,
         photoId: uploadId,
-        userId: authUser.uid,
+        userId,
         filename,
         tempPath: path.join(config.uploadTempDir, uploadId),
         originalPath: null,
@@ -117,13 +111,13 @@ export async function registerUploadRoutes(app: FastifyInstance): Promise<void> 
     async onUploadFinish(request, upload) {
       const metadata = getUploadMetadata(upload);
 
-      const authUser = (request as unknown as TusIncomingMessage).authenticatedUser!;
+      const userId = metadata.userId as string;
 
       const uploadId = upload.id;
       await uploadQueue.add("photo-upload", {
         uploadId,
         photoId: uploadId,
-        userId: authUser.uid,
+        userId,
         filename: metadata.filename ?? uploadId,
         localPath: path.join(config.uploadTempDir, uploadId),
         mimeType: metadata.mimeType ?? "application/octet-stream"
@@ -157,7 +151,7 @@ export async function registerUploadRoutes(app: FastifyInstance): Promise<void> 
     }
 
     await app.requireAuth(request, reply);
-    (request.raw as TusIncomingMessage).authenticatedUser = request.user;
+    (request.raw as any).authenticatedUser = request.user;
 
     if (request.method === "POST") {
       await app.enforceUploadRateLimit(request, reply);
@@ -257,17 +251,17 @@ export async function registerUploadRoutes(app: FastifyInstance): Promise<void> 
       const found = photoSnapshot.data();
       photo = photoSnapshot.exists && found?.userId === request.user!.uid
         ? {
-            photoId: found.photoId,
-            filename: found.filename,
-            mimeType: found.mimeType,
-            sizeBytes: found.sizeBytes,
-            width: found.width,
-            height: found.height,
-            uploadedAt: found.uploadedAt.toDate().toISOString(),
-            originalAvailable: found.originalAvailable,
-            purgedAt: found.purgedAt ? found.purgedAt.toDate().toISOString() : null,
-            status: found.status
-          }
+          photoId: found.photoId,
+          filename: found.filename,
+          mimeType: found.mimeType,
+          sizeBytes: found.sizeBytes,
+          width: found.width,
+          height: found.height,
+          uploadedAt: found.uploadedAt.toDate().toISOString(),
+          originalAvailable: found.originalAvailable,
+          purgedAt: found.purgedAt ? found.purgedAt.toDate().toISOString() : null,
+          status: found.status
+        }
         : null;
     }
 
