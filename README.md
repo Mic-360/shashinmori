@@ -1,8 +1,8 @@
 # ShashinMori (写真森 - Photo Forest)
 
-A complete, production-ready solution for private photo gallery management. ShashinMori enables secure photo uploads and browsing through Google authentication. It consists of a Fastify backend (`shashinmori-api`) for processing and storage, and a Flutter multi-platform application (`shashinmori-web` / `shashinmori-app`) for the user interface.
+A complete, production-ready solution for private photo gallery management on a self-hosted Android device (typically an old Pixel phone, or any phone running a Pixel Experience-compatible ROM). ShashinMori enables secure photo uploads and browsing through Google authentication. It consists of a Fastify backend (`shashinmori-api`) for processing and storage, and a Flutter multi-platform client (`shashinmori-web`) for the user interface.
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/Mic-360/shashinmori/blob/shashinmori-api/LICENSE)
 [![Flutter](https://img.shields.io/badge/Flutter-3.22-blue.svg)](https://flutter.dev)
 [![Fastify](https://img.shields.io/badge/Fastify-5.2-000?logo=fastify)](https://www.fastify.io/)
 [![Node.js](https://img.shields.io/badge/Node.js-20+-green)](https://nodejs.org/)
@@ -38,6 +38,8 @@ ShashinMori has two main components:
 
 1. **`shashinmori-api`**: A Fastify backend that handles resumable photo uploads (via tus), securely stores originals (e.g., on an Android host), generates and retains optimized previews using Jimp, manages gallery metadata in Firestore, and serves authenticated endpoints.
 2. **`shashinmori-web`**: A modern Flutter web + Android client that signs users in with Firebase Auth (Google Sign-In), uploads photos reliably, and displays the private gallery securely from the API.
+
+This project is designed around Google Photos' unlimited backup behavior on supported Pixel/Pixel Experience devices: originals are uploaded to the backend host device, backed up by Google Photos on-device, then purged locally after backup while lightweight previews remain available in ShashinMori.
 
 ---
 
@@ -131,7 +133,12 @@ Gallery Endpoints
 
 ### 1. Clone Repository
 
-The project is split across branches. Depending on what you are working on, checkout the specific branch:
+ShashinMori is **branch-split**, not a monorepo with `shashinmori-api/` and `shashinmori-web/` folders on `main`.
+- `main`: documentation only
+- `shashinmori-api`: backend code at repository root
+- `shashinmori-web`: Flutter client code at repository root
+
+Depending on what you are working on, checkout the specific branch:
 
 ```bash
 # Clone the repository
@@ -204,7 +211,7 @@ flutter run -d android --dart-define=API_BASE_URL=http://127.0.0.1:3000
 
 ## ⚙️ Configuration Guides
 
-### API Environment Variables (`shashinmori-api/.env`)
+### API Environment Variables (`.env` in `shashinmori-api` branch root)
 
 ```env
 PORT=3000
@@ -238,7 +245,7 @@ SYNC_FOLDER_PATH=/sdcard/Pictures/ShashinMori
 PREVIEW_DIR=/data/data/com.termux/files/home/.shashinmori/previews
 ```
 
-### App Environment Variables (`shashinmori-web/.env`)
+### App Environment Variables (`.env` in `shashinmori-web` branch root)
 
 ```env
 FIREBASE_API_KEY=your-firebase-api-key
@@ -255,6 +262,9 @@ FIREBASE_STORAGE_BUCKET=your-project-id.firebasestorage.app
 
 ### Backend Deployment
 
+Run the following commands from the **repository root while on the `shashinmori-api` branch**.  
+The PM2 command expects `infrastructure/pm2/ecosystem.config.js`; the Docker command requires a `Dockerfile` in that branch.
+
 **Docker:**
 ```bash
 docker build -t shashinmori-api .
@@ -269,6 +279,8 @@ pm2 save && pm2 startup
 ```
 
 ### Frontend Deployment
+
+Run the following commands from the **repository root while on the `shashinmori-web` branch**:
 
 **Web:**
 ```bash
@@ -285,6 +297,9 @@ flutter build apk --release --dart-define=API_BASE_URL=https://api.yourdomain.co
 ## ⚠️ Important Product Constraints
 
 - **Google Photos is Backup Only**: Google Photos is treated strictly as a device-side backup on the host device.
+- **Primary Host Target**: Backend is intended to run on an old Pixel device or another Pixel Experience ROM-supported phone.
+- **Lifecycle Behavior**: Originals are sent to the backend host device, backed up by Google Photos, then purged locally after backup; previews are retained for gallery tracking.
+- **Multi-User Isolation**: Firestore records are user-scoped so users can only access their own photo metadata and previews.
 - **No Direct Cloud Integration**: The app does not use the Google Photos API for gallery listing, deletion, or downloading.
 - **Delete and Download Unavailable**: Deletion and downloading of photos are intentionally unsupported in both the backend and Flutter app to maintain a strict append-only archive system.
 
@@ -316,7 +331,9 @@ Contributions are welcome! If you want to improve the system:
 
 ## 📄 License
 
-This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the **MIT License**. License files are currently present in the component branches:
+- [Backend license (`shashinmori-api`)](https://github.com/Mic-360/shashinmori/blob/shashinmori-api/LICENSE)
+- [Frontend license (`shashinmori-web`)](https://github.com/Mic-360/shashinmori/blob/shashinmori-web/LICENSE)
 
 ---
 *Made with ❤️ by bhaumic*
