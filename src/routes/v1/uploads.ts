@@ -73,6 +73,7 @@ function setTusCorsHeaders(reply: FastifyReply, origin?: string) {
 export async function registerUploadRoutes(app: FastifyInstance): Promise<void> {
   const tusServer = new TusServer({
     path: "/v1/uploads",
+    relativeLocation: true,
     datastore: new FileStore({
       directory: config.uploadTempDir
     }),
