@@ -183,6 +183,7 @@ class CompiledApp {
       _693: (module,f) => finalizeWrapper(f, function(x0) { return module.exports._693(f,arguments.length,x0) }),
       _694: (x0,x1) => x0.requestAnimationFrame(x1),
       _698: (x0,x1) => x0.warn(x1),
+      _700: (x0,x1) => x0.debug(x1),
       _701: x0 => globalThis.parseFloat(x0),
       _702: () => globalThis.window,
       _703: () => globalThis.Intl,
@@ -217,6 +218,7 @@ class CompiledApp {
       _759: x0 => x0.parentElement,
       _761: (x0,x1) => { x0.textContent = x1 },
       _762: x0 => x0.parentNode,
+      _763: x0 => x0.nextSibling,
       _764: (x0,x1) => x0.removeChild(x1),
       _765: x0 => x0.isConnected,
       _773: x0 => x0.clientHeight,
@@ -410,6 +412,8 @@ class CompiledApp {
       _1236: x0 => x0.selectedTrack,
       _1237: x0 => x0.repetitionCount,
       _1238: x0 => x0.frameCount,
+      _1293: (x0,x1) => x0.createElement(x1),
+      _1299: (x0,x1,x2) => x0.addEventListener(x1,x2),
       _1304: x0 => globalThis.URL.createObjectURL(x0),
       _1310: (x0,x1) => x0.querySelector(x1),
       _1311: (x0,x1) => x0.createElement(x1),
@@ -418,6 +422,13 @@ class CompiledApp {
       _1315: x0 => x0.click(),
       _1325: (x0,x1) => x0.item(x1),
       _1326: (x0,x1) => x0.getAttribute(x1),
+      _1327: x0 => x0.decode(),
+      _1328: (x0,x1,x2,x3) => x0.open(x1,x2,x3),
+      _1329: (x0,x1,x2) => x0.setRequestHeader(x1,x2),
+      _1330: (module,f) => finalizeWrapper(f, function(x0) { return module.exports._1330(f,arguments.length,x0) }),
+      _1331: (module,f) => finalizeWrapper(f, function(x0) { return module.exports._1331(f,arguments.length,x0) }),
+      _1332: x0 => x0.send(),
+      _1333: () => new XMLHttpRequest(),
       _1335: (x0,x1) => x0.getIdToken(x1),
       _1354: x0 => x0.toJSON(),
       _1355: (module,f) => finalizeWrapper(f, function(x0) { return module.exports._1355(f,arguments.length,x0) }),
@@ -694,6 +705,18 @@ class CompiledApp {
           setValue(wasmArray, wasmArrayOffset + i, jsArray[jsArrayOffset + i]);
         }
       },
+      _1837: (jsArray, jsArrayOffset, wasmArray, wasmArrayOffset, length) => {
+        const getValue = dartInstance.exports.$wasmI16ArrayGet;
+        for (let i = 0; i < length; i++) {
+          jsArray[jsArrayOffset + i] = getValue(wasmArray, wasmArrayOffset + i);
+        }
+      },
+      _1838: (jsArray, jsArrayOffset, wasmArray, wasmArrayOffset, length) => {
+        const setValue = dartInstance.exports.$wasmI16ArraySet;
+        for (let i = 0; i < length; i++) {
+          setValue(wasmArray, wasmArrayOffset + i, jsArray[jsArrayOffset + i]);
+        }
+      },
       _1839: (jsArray, jsArrayOffset, wasmArray, wasmArrayOffset, length) => {
         const getValue = dartInstance.exports.$wasmI32ArrayGet;
         for (let i = 0; i < length; i++) {
@@ -852,6 +875,18 @@ class CompiledApp {
       _1969: Function.prototype.call.bind(BigInt.prototype.toString),
       _1970: Function.prototype.call.bind(Number.prototype.toString),
       _1971: (d, digits) => d.toFixed(digits),
+      _1992: () => globalThis.document,
+      _1998: (x0,x1) => { x0.height = x1 },
+      _2000: (x0,x1) => { x0.width = x1 },
+      _2002: (x0,x1) => { x0.pointerEvents = x1 },
+      _2011: x0 => x0.style,
+      _2014: x0 => x0.src,
+      _2015: (x0,x1) => { x0.src = x1 },
+      _2016: x0 => x0.naturalWidth,
+      _2017: x0 => x0.naturalHeight,
+      _2033: x0 => x0.status,
+      _2034: (x0,x1) => { x0.responseType = x1 },
+      _2036: x0 => x0.response,
       _2113: x0 => { globalThis.onGoogleLibraryLoad = x0 },
       _2114: (module,f) => finalizeWrapper(f, function() { return module.exports._2114(f,arguments.length) }),
       _2152: x0 => x0.readyState,
