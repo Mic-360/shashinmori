@@ -51,6 +51,10 @@ function getUploadMetadata(upload: Upload): Record<string, string | null> {
   return upload.metadata ?? {};
 }
 
+function tusError(message: string, statusCode: number): Error & { status_code: number } {
+  return Object.assign(new Error(message), { status_code: statusCode });
+}
+
 function setTusCorsHeaders(reply: FastifyReply, origin?: string) {
   if (origin) {
     reply.header("Access-Control-Allow-Origin", origin);
@@ -81,19 +85,13 @@ export async function registerUploadRoutes(app: FastifyInstance): Promise<void> 
     maxSize: config.maxUploadSizeBytes,
     async onUploadCreate(request, upload) {
       const metadata = getUploadMetadata(upload);
-      const authUser = (request as unknown as TusIncomingMessage).authenticatedUser;
-      if (!authUser) {
-        throw new AppError("UNAUTHORIZED", "Authentication required", 401);
-      }
 
-      if (!metadata.userId || metadata.userId !== authUser.uid) {
-        throw new AppError("UNAUTHORIZED", "Upload metadata userId must match authenticated user", 401);
-      }
+      const authUser = (request as unknown as TusIncomingMessage).authenticatedUser!;
 
       const filename = metadata.filename?.trim();
       const mimeType = metadata.mimeType?.trim();
       if (!filename || !mimeType) {
-        throw new AppError("VALIDATION_ERROR", "Tus metadata must include filename and mimeType", 400);
+        throw tusError("Tus metadata must include filename and mimeType", 400);
       }
 
       const uploadId = upload.id;
@@ -118,10 +116,8 @@ export async function registerUploadRoutes(app: FastifyInstance): Promise<void> 
     },
     async onUploadFinish(request, upload) {
       const metadata = getUploadMetadata(upload);
-      const authUser = (request as unknown as TusIncomingMessage).authenticatedUser;
-      if (!authUser) {
-        throw new AppError("UNAUTHORIZED", "Authentication required", 401);
-      }
+
+      const authUser = (request as unknown as TusIncomingMessage).authenticatedUser!;
 
       const uploadId = upload.id;
       await uploadQueue.add("photo-upload", {
