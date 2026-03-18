@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class AdaptiveDestination {
   const AdaptiveDestination({
@@ -30,8 +31,12 @@ class AdaptiveScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final tt = Theme.of(context).textTheme;
+
     return LayoutBuilder(
       builder: (context, constraints) {
+        // ── Mobile: bottom navigation bar ──
         if (constraints.maxWidth < 600) {
           return Scaffold(
             body: child,
@@ -51,6 +56,7 @@ class AdaptiveScaffold extends StatelessWidget {
           );
         }
 
+        // ── Tablet: navigation rail ──
         if (constraints.maxWidth < 1200) {
           return Scaffold(
             body: Row(
@@ -59,6 +65,14 @@ class AdaptiveScaffold extends StatelessWidget {
                   selectedIndex: currentIndex,
                   labelType: NavigationRailLabelType.all,
                   onDestinationSelected: onDestinationSelected,
+                  leading: Padding(
+                    padding: const EdgeInsets.only(top: 8, bottom: 16),
+                    child: SvgPicture.asset(
+                      'web/favicon.svg',
+                      width: 32,
+                      height: 32,
+                    ),
+                  ),
                   destinations: [
                     for (final destination in destinations)
                       NavigationRailDestination(
@@ -68,7 +82,10 @@ class AdaptiveScaffold extends StatelessWidget {
                       ),
                   ],
                 ),
-                const VerticalDivider(width: 1),
+                VerticalDivider(
+                  width: 1,
+                  color: cs.outlineVariant.withValues(alpha: 0.2),
+                ),
                 Expanded(child: child),
               ],
             ),
@@ -76,6 +93,7 @@ class AdaptiveScaffold extends StatelessWidget {
           );
         }
 
+        // ── Desktop: navigation drawer ──
         return Scaffold(
           body: Row(
             children: [
@@ -83,12 +101,26 @@ class AdaptiveScaffold extends StatelessWidget {
                 selectedIndex: currentIndex,
                 onDestinationSelected: onDestinationSelected,
                 children: [
-                  const DrawerHeader(
-                    child: Align(
-                      alignment: Alignment.bottomLeft,
-                      child: Text('ShashinMori'),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(28, 24, 16, 16),
+                    child: Row(
+                      children: [
+                        SvgPicture.asset(
+                          'web/favicon.svg',
+                          width: 36,
+                          height: 36,
+                        ),
+                        const SizedBox(width: 12),
+                        Text(
+                          'ShashinMori',
+                          style: tt.titleLarge?.copyWith(
+                            color: cs.primary,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
+                  const SizedBox(height: 8),
                   for (final destination in destinations)
                     NavigationDrawerDestination(
                       icon: Icon(destination.icon),
@@ -97,7 +129,10 @@ class AdaptiveScaffold extends StatelessWidget {
                     ),
                 ],
               ),
-              const VerticalDivider(width: 1),
+              VerticalDivider(
+                width: 1,
+                color: cs.outlineVariant.withValues(alpha: 0.2),
+              ),
               Expanded(child: child),
             ],
           ),
