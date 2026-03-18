@@ -1,9 +1,11 @@
+import 'dart:convert';
+
 import 'package:cross_file/cross_file.dart';
 import 'package:dio/dio.dart';
 
 String _encodeMetadata(Map<String, String> metadata) {
   return metadata.entries
-      .map((entry) => '${entry.key} ${Uri.encodeComponent(entry.value)}')
+      .map((entry) => '${entry.key} ${base64Encode(utf8.encode(entry.value))}')
       .join(',');
 }
 
@@ -39,7 +41,7 @@ Future<String> uploadWithTusTransport({
   final uploadUri = uri.resolve(location);
   final uploadResponse = await dio.patchUri(
     uploadUri,
-    data: Stream.fromIterable([bytes]),
+    data: bytes,
     options: Options(
       headers: {
         ...headers,
