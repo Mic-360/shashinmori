@@ -1,4 +1,8 @@
-# ShashinMori (写真森 - Photo Forest)
+<div align="center">
+  <img src="./logo.png" alt="ShashinMori Logo" width="200" />
+</div>
+
+# ShashinMori (写真森 - Photo Forest Fairy)
 
 A complete, production-ready solution for private photo gallery management on a self-hosted Android device (typically an old Pixel phone, or any phone running a Pixel Experience-compatible ROM). ShashinMori enables secure photo uploads and browsing through Google authentication. It consists of a Fastify backend (`shashinmori-api`) for processing and storage, and a Flutter multi-platform client (`shashinmori-web`) for the user interface.
 
@@ -33,6 +37,8 @@ A complete, production-ready solution for private photo gallery management on a 
 ---
 
 ## 🌟 Overview
+
+<img align="right" width="120" src="./collage.png" alt="Collage mascot" />
 
 ShashinMori has two main components:
 
@@ -92,6 +98,8 @@ Gallery Endpoints
 
 ## 🛠 Tech Stack
 
+<img align="right" width="120" src="./phone.png" alt="Phone mascot" />
+
 ### Backend (`shashinmori-api`)
 - **Framework**: Node.js 20+, Fastify, TypeScript
 - **Uploads**: tus server (`@tus/server`)
@@ -130,6 +138,8 @@ Gallery Endpoints
 ---
 
 ## 🚀 Installation & Setup
+
+<img align="right" width="120" src="./teacher.png" alt="Teacher mascot" />
 
 ### 1. Clone Repository
 
@@ -307,6 +317,8 @@ flutter build apk --release --dart-define=API_BASE_URL=https://api.yourdomain.co
 
 ## 🔧 Troubleshooting
 
+<img align="right" width="120" src="./anger.png" alt="Angry mascot" />
+
 **Backend Redis/Upload Issues:**
 - Ensure `UPSTASH_REDIS_TLS_URL` uses the `rediss://` protocol.
 - Check that `UPLOAD_TEMP_DIR`, `SYNC_FOLDER_PATH`, and `PREVIEW_DIR` exist and are writable.
@@ -320,6 +332,8 @@ flutter build apk --release --dart-define=API_BASE_URL=https://api.yourdomain.co
 ---
 
 ## 🤝 Contributing
+
+<img align="right" width="120" src="./coffee.png" alt="Coffee mascot" />
 
 Contributions are welcome! If you want to improve the system:
 1. Fork the repository.
