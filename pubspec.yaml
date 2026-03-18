@@ -27,6 +27,7 @@ dependencies:
   cached_network_image: ^3.4.1
   shimmer: ^3.0.0
   google_fonts: ^6.3.1
+  flutter_svg: ^2.0.17
   gap: ^3.0.1
 
   image_picker: ^1.2.0
