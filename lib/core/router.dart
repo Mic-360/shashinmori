@@ -1,11 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 import '../features/auth/auth_provider.dart';
 import '../features/auth/login_screen.dart';
 import '../features/gallery/gallery_screen.dart';
+import '../features/landing/landing_screen.dart';
 import '../features/upload/upload_fab.dart';
 import '../features/upload/upload_progress_sheet.dart';
 import '../shared/widgets/adaptive_scaffold.dart';
@@ -14,22 +16,29 @@ final routerProvider = Provider<GoRouter>((ref) {
   ref.watch(authStateProvider);
 
   return GoRouter(
-    initialLocation: '/gallery',
+    initialLocation: '/',
     redirect: (context, state) {
       final signedIn = FirebaseAuth.instance.currentUser != null;
-      final onLogin = state.matchedLocation == '/login';
+      final path = state.matchedLocation;
+      final onLanding = path == '/';
+      final onLogin = path == '/login';
 
+      // If not signed in: allow landing and login, redirect others
       if (!signedIn) {
-        return onLogin ? null : '/login';
+        if (onLanding || onLogin) return null;
+        return '/';
       }
 
-      if (onLogin) {
-        return '/gallery';
-      }
+      // If signed in: redirect landing and login to gallery
+      if (onLanding || onLogin) return '/gallery';
 
       return null;
     },
     routes: [
+      GoRoute(
+        path: '/',
+        builder: (context, state) => const LandingScreen(),
+      ),
       GoRoute(
         path: '/login',
         builder: (context, state) => const LoginScreen(),
@@ -91,7 +100,7 @@ class _AppShell extends StatelessWidget {
         AdaptiveDestination(
           icon: Icons.photo_library_outlined,
           selectedIcon: Icons.photo_library,
-          label: 'Gallery',
+          label: 'Photos',
         ),
         AdaptiveDestination(
           icon: Icons.cloud_upload_outlined,
