@@ -143,6 +143,16 @@ export async function registerUploadRoutes(app: FastifyInstance): Promise<void> 
 
   const tusHandler = async (request: FastifyRequest, reply: FastifyReply) => {
     const origin = request.headers.origin;
+    app.log.info({
+      requestId: request.id,
+      method: request.method,
+      url: request.url,
+      origin,
+      hasAuthorization: typeof request.headers.authorization === "string",
+      uploadLength: request.headers["upload-length"],
+      tusResumable: request.headers["tus-resumable"],
+      uploadMetadata: request.headers["upload-metadata"]
+    }, "tus request received");
 
     if (request.method === "OPTIONS") {
       setTusCorsHeaders(reply, origin);
