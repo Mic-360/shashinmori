@@ -39,6 +39,7 @@ class AdaptiveScaffold extends StatelessWidget {
         // ── Mobile: bottom navigation bar ──
         if (constraints.maxWidth < 600) {
           return Scaffold(
+            backgroundColor: Colors.transparent,
             body: child,
             floatingActionButton: floatingActionButton,
             bottomNavigationBar: NavigationBar(
@@ -59,6 +60,7 @@ class AdaptiveScaffold extends StatelessWidget {
         // ── Tablet: navigation rail ──
         if (constraints.maxWidth < 1200) {
           return Scaffold(
+            backgroundColor: Colors.transparent,
             body: Row(
               children: [
                 NavigationRail(
@@ -95,6 +97,7 @@ class AdaptiveScaffold extends StatelessWidget {
 
         // ── Desktop: navigation drawer ──
         return Scaffold(
+          backgroundColor: Colors.transparent,
           body: Row(
             children: [
               NavigationDrawer(

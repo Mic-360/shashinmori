@@ -76,6 +76,12 @@ class _GalleryScreenState extends ConsumerState<GalleryScreen> {
             8,
           ),
           child: SearchBar(
+            backgroundColor: WidgetStatePropertyAll(
+              Theme.of(context).brightness == Brightness.dark
+                  ? const Color(0xFF1A1F1C).withValues(alpha: 0.75)
+                  : Colors.white.withValues(alpha: 0.75),
+            ),
+            elevation: const WidgetStatePropertyAll(0),
             hintText: 'Search your photos',
             leading: Padding(
               padding: const EdgeInsets.only(left: 8),
@@ -165,17 +171,28 @@ class _GalleryScreenState extends ConsumerState<GalleryScreen> {
                   child: ListView(
                     children: [
                       const SizedBox(height: 120),
-                      Icon(
-                        Icons.add_photo_alternate_outlined,
-                        size: 72,
-                        color: cs.primary.withValues(alpha: 0.4),
+                      Center(
+                        child: Container(
+                          width: 140,
+                          height: 140,
+                          decoration: BoxDecoration(
+                            color: cs.primaryContainer.withValues(alpha: 0.4),
+                            borderRadius: BorderRadius.circular(40),
+                          ),
+                          child: Icon(
+                            Icons.add_photo_alternate_outlined,
+                            size: 64,
+                            color: cs.primary,
+                          ),
+                        ),
                       ),
                       const SizedBox(height: 20),
                       Text(
                         'No photos yet',
                         textAlign: TextAlign.center,
-                        style: tt.titleLarge?.copyWith(
-                          color: cs.onSurface.withValues(alpha: 0.6),
+                        style: tt.displaySmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: -0.5,
                         ),
                       ),
                       const SizedBox(height: 8),

@@ -11,6 +11,8 @@ import '../features/landing/landing_screen.dart';
 import '../features/upload/upload_fab.dart';
 import '../features/upload/upload_progress_sheet.dart';
 import '../shared/widgets/adaptive_scaffold.dart';
+import '../shared/widgets/animated_background.dart';
+import '../shared/widgets/glass_card.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   ref.watch(authStateProvider);
@@ -84,8 +86,11 @@ class _AppShell extends StatelessWidget {
       _ => 0,
     };
 
-    return AdaptiveScaffold(
-      currentIndex: currentIndex,
+    return Stack(
+      children: [
+        const Positioned.fill(child: AnimatedBackground()),
+        AdaptiveScaffold(
+          currentIndex: currentIndex,
       onDestinationSelected: (index) {
         switch (index) {
           case 0:
@@ -115,7 +120,9 @@ class _AppShell extends StatelessWidget {
       ],
       floatingActionButton: currentIndex == 2 ? null : const UploadFab(),
       child: child,
-    );
+    ),
+  ],
+);
   }
 }
 
@@ -179,10 +186,10 @@ class _ProfileScreen extends ConsumerWidget {
               const SizedBox(height: 32),
 
               // Settings cards
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  child: Column(
+              GlassCard(
+                borderRadius: 24,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                child: Column(
                     children: [
                       _ProfileTile(
                         icon: Icons.eco_outlined,
@@ -214,21 +221,19 @@ class _ProfileScreen extends ConsumerWidget {
                       ),
                     ],
                   ),
-                ),
               ),
               const SizedBox(height: 16),
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  child: _ProfileTile(
-                    icon: Icons.logout,
-                    title: 'Sign out',
-                    subtitle: 'Sign out of your account',
-                    iconColor: cs.error,
-                    onTap: () async {
-                      await authRepository.signOut();
-                    },
-                  ),
+              GlassCard(
+                borderRadius: 24,
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: _ProfileTile(
+                  icon: Icons.logout,
+                  title: 'Sign out',
+                  subtitle: 'Sign out of your account',
+                  iconColor: cs.error,
+                  onTap: () async {
+                    await authRepository.signOut();
+                  },
                 ),
               ),
               const SizedBox(height: 32),

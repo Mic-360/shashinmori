@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'upload_provider.dart';
+import '../upload/upload_provider.dart';
+import '../../shared/widgets/glass_card.dart';
 
 class UploadProgressSheet extends ConsumerWidget {
   const UploadProgressSheet({super.key});
@@ -48,20 +49,26 @@ class UploadProgressSheet extends ConsumerWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Container(
-                width: 80,
-                height: 80,
+                width: 120,
+                height: 120,
                 decoration: BoxDecoration(
                   color: cs.primaryContainer.withValues(alpha: 0.4),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
                   Icons.cloud_upload_outlined,
-                  size: 36,
+                  size: 56,
                   color: cs.primary,
                 ),
               ),
-              const SizedBox(height: 24),
-              Text('No uploads yet', style: tt.titleLarge),
+              const SizedBox(height: 32),
+              Text(
+                'No uploads yet', 
+                style: tt.headlineMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: -0.5,
+                ),
+              ),
               const SizedBox(height: 8),
               Text(
                 'Tap the upload button to start\nadding photos to your forest.',
@@ -86,13 +93,13 @@ class UploadProgressSheet extends ConsumerWidget {
         final isFailed = task.phase == UploadPhase.failed;
 
         return Padding(
-          padding: const EdgeInsets.only(bottom: 12),
-          child: Card(
-            child: Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+          padding: const EdgeInsets.only(bottom: 16),
+          child: GlassCard(
+            borderRadius: 24,
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
                   Row(
                     children: [
                       Container(
@@ -197,7 +204,6 @@ class UploadProgressSheet extends ConsumerWidget {
                 ],
               ),
             ),
-          ),
         );
       },
     );

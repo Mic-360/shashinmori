@@ -44,7 +44,7 @@ class _PhotoCardState extends State<PhotoCard> {
           duration: const Duration(milliseconds: 200),
           curve: Curves.easeOutCubic,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(4),
+            borderRadius: BorderRadius.circular(20),
             boxShadow: _isHovered
                 ? [
                     BoxShadow(
@@ -56,7 +56,7 @@ class _PhotoCardState extends State<PhotoCard> {
                 : [],
           ),
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(4),
+            borderRadius: BorderRadius.circular(20),
             child: Stack(
               children: [
                 AspectRatio(
@@ -82,7 +82,7 @@ class _PhotoCardState extends State<PhotoCard> {
                     child: Container(
                       decoration: BoxDecoration(
                         color: Colors.black.withValues(alpha: 0.08),
-                        borderRadius: BorderRadius.circular(4),
+                        borderRadius: BorderRadius.circular(20),
                       ),
                       child: Align(
                         alignment: Alignment.topLeft,
