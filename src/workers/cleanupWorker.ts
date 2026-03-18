@@ -14,9 +14,12 @@ export const cleanupWorker = new Worker<CleanupJobPayload>("cleanup", async (job
     return;
   }
 
+  const twelveHoursAgo = Timestamp.fromMillis(Date.now() - 12 * 60 * 60 * 1000);
+
   const snapshot = await photosCollection()
     .where("status", "==", "active")
     .where("originalAvailable", "==", true)
+    .where("uploadedAt", "<=", twelveHoursAgo)
     .get();
 
   for (const doc of snapshot.docs) {
