@@ -37,18 +37,63 @@ function decodeCursor(cursor: string): Timestamp {
   return Timestamp.fromMillis(parsed.uploadedAtMs);
 }
 
-function serializePhoto(photo: {
-  photoId: string;
-  filename: string;
-  mimeType: string;
-  sizeBytes: number;
-  width: number;
-  height: number;
-  uploadedAt: Timestamp;
-  originalAvailable: boolean;
-  purgedAt: Timestamp | null;
-  status: "active";
-}) {
+function toTimestamp(value: unknown, fieldName: string): Timestamp {
+  if (value instanceof Timestamp) {
+    return value;
+  }
+
+  if (value instanceof Date) {
+    return Timestamp.fromDate(value);
+  }
+
+  if (typeof value === "string") {
+    const parsed = Date.parse(value);
+    if (!Number.isNaN(parsed)) {
+      return Timestamp.fromMillis(parsed);
+    }
+  }
+
+  if (typeof value === "number" && Number.isFinite(value)) {
+    return Timestamp.fromMillis(value);
+  }
+
+  if (
+    typeof value === "object"
+    && value !== null
+    && "seconds" in value
+    && typeof (value as { seconds?: unknown }).seconds === "number"
+  ) {
+    const seconds = (value as { seconds: number }).seconds;
+    const nanoseconds = (
+      "nanoseconds" in value && typeof (value as { nanoseconds?: unknown }).nanoseconds === "number"
+    )
+      ? (value as { nanoseconds: number }).nanoseconds
+      : 0;
+    return new Timestamp(seconds, nanoseconds);
+  }
+
+  throw new AppError("INVALID_PHOTO_RECORD", `Photo field "${fieldName}" is invalid`, 500);
+}
+
+function normalizePhoto(photo: Record<string, unknown>, photoId: string) {
+  const uploadedAt = toTimestamp(photo.uploadedAt, "uploadedAt");
+  const purgedAt = photo.purgedAt == null ? null : toTimestamp(photo.purgedAt, "purgedAt");
+
+  return {
+    photoId: typeof photo.photoId === "string" && photo.photoId.length > 0 ? photo.photoId : photoId,
+    filename: typeof photo.filename === "string" ? photo.filename : "photo",
+    mimeType: typeof photo.mimeType === "string" ? photo.mimeType : "application/octet-stream",
+    sizeBytes: typeof photo.sizeBytes === "number" ? photo.sizeBytes : 0,
+    width: typeof photo.width === "number" ? photo.width : 0,
+    height: typeof photo.height === "number" ? photo.height : 0,
+    uploadedAt,
+    originalAvailable: photo.originalAvailable === true,
+    purgedAt,
+    status: photo.status === "active" ? "active" as const : "active" as const
+  };
+}
+
+function serializePhoto(photo: ReturnType<typeof normalizePhoto>) {
   return {
     photoId: photo.photoId,
     filename: photo.filename,
@@ -61,6 +106,25 @@ function serializePhoto(photo: {
     purgedAt: photo.purgedAt ? photo.purgedAt.toDate().toISOString() : null,
     status: photo.status
   };
+}
+
+function sortPhotosByUploadedAtDesc(
+  left: ReturnType<typeof normalizePhoto>,
+  right: ReturnType<typeof normalizePhoto>,
+) {
+  return right.uploadedAt.toMillis() - left.uploadedAt.toMillis();
+}
+
+function applyCursor(
+  photos: ReturnType<typeof normalizePhoto>[],
+  cursor?: string,
+) {
+  if (!cursor) {
+    return photos;
+  }
+
+  const cursorTimestamp = decodeCursor(cursor).toMillis();
+  return photos.filter((photo) => photo.uploadedAt.toMillis() < cursorTimestamp);
 }
 
 function getPreviewContentType(filePath: string): string {
@@ -154,20 +218,18 @@ export async function registerPhotoRoutes(app: FastifyInstance): Promise<void> {
   }, async (request) => {
     const query = request.query as { cursor?: string; limit?: number };
     const limit = Math.min(query.limit ?? 20, 50);
-    let firestoreQuery = photosCollection()
+    const snapshot = await photosCollection()
       .where("userId", "==", request.user!.uid)
-      .where("status", "==", "active")
-      .orderBy("uploadedAt", "desc")
-      .limit(limit + 1);
+      .get();
 
-    if (query.cursor) {
-      firestoreQuery = firestoreQuery.startAfter(decodeCursor(query.cursor));
-    }
+    const normalizedPhotos = snapshot.docs
+      .map((doc) => normalizePhoto(doc.data() as unknown as Record<string, unknown>, doc.id))
+      .filter((photo) => photo.status === "active")
+      .sort(sortPhotosByUploadedAtDesc);
 
-    const snapshot = await firestoreQuery.get();
-    const docs = snapshot.docs.map((doc) => doc.data());
-    const hasMore = docs.length > limit;
-    const pageData = hasMore ? docs.slice(0, limit) : docs;
+    const cursorFilteredPhotos = applyCursor(normalizedPhotos, query.cursor);
+    const hasMore = cursorFilteredPhotos.length > limit;
+    const pageData = hasMore ? cursorFilteredPhotos.slice(0, limit) : cursorFilteredPhotos;
     const lastItem = pageData.at(-1);
 
     return createList(
