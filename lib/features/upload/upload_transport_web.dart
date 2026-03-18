@@ -43,11 +43,11 @@ Future<String> uploadWithTusTransport({
     uploadUri,
     data: bytes,
     options: Options(
+      contentType: 'application/offset+octet-stream',
       headers: {
         ...headers,
         'Tus-Resumable': '1.0.0',
         'Upload-Offset': '0',
-        'Content-Type': 'application/offset+octet-stream',
       },
       validateStatus: (status) => status != null && status >= 200 && status < 400,
     ),
