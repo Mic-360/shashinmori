@@ -19,10 +19,10 @@ class PhotoGrid extends StatelessWidget {
   Widget build(BuildContext context) {
     return MasonryGridView.count(
       controller: controller,
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(4),
       crossAxisCount: crossAxisCount,
-      mainAxisSpacing: 16,
-      crossAxisSpacing: 16,
+      mainAxisSpacing: 4,
+      crossAxisSpacing: 4,
       itemCount: itemCount,
       itemBuilder: itemBuilder,
     );

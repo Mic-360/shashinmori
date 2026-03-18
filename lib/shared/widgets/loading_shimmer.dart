@@ -3,7 +3,7 @@ import 'package:shimmer/shimmer.dart';
 
 class LoadingShimmer extends StatelessWidget {
   const LoadingShimmer({
-    this.itemCount = 8,
+    this.itemCount = 12,
     this.crossAxisCount = 2,
     super.key,
   });
@@ -13,15 +13,16 @@ class LoadingShimmer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final baseColor = Theme.of(context).colorScheme.surfaceContainerHighest;
-    final highlightColor = Theme.of(context).colorScheme.surface;
+    final cs = Theme.of(context).colorScheme;
+    final baseColor = cs.surfaceContainerHighest;
+    final highlightColor = cs.surfaceContainerLow;
 
     return GridView.builder(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(4),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: crossAxisCount,
-        mainAxisSpacing: 16,
-        crossAxisSpacing: 16,
+        mainAxisSpacing: 4,
+        crossAxisSpacing: 4,
         childAspectRatio: 0.85,
       ),
       itemCount: itemCount,
@@ -31,7 +32,7 @@ class LoadingShimmer extends StatelessWidget {
           highlightColor: highlightColor,
           child: Container(
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(24),
+              borderRadius: BorderRadius.circular(4),
               color: Colors.white,
             ),
           ),
