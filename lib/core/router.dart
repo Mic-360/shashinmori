@@ -124,43 +124,177 @@ class _ProfileScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final cs = Theme.of(context).colorScheme;
+    final tt = Theme.of(context).textTheme;
     final user = FirebaseAuth.instance.currentUser;
     final authRepository = ref.watch(authRepositoryProvider);
 
     return Center(
-      child: Padding(
+      child: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 520),
-          child: Card(
-            child: Padding(
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Family profile',
-                    style: Theme.of(context).textTheme.headlineMedium,
+          child: Column(
+            children: [
+              // Avatar
+              Container(
+                width: 96,
+                height: 96,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: cs.primaryContainer,
+                ),
+                child: user?.photoURL != null
+                    ? ClipOval(
+                        child: Image.network(
+                          user!.photoURL!,
+                          width: 96,
+                          height: 96,
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, __, ___) => Icon(
+                            Icons.person,
+                            size: 48,
+                            color: cs.onPrimaryContainer,
+                          ),
+                        ),
+                      )
+                    : Icon(
+                        Icons.person,
+                        size: 48,
+                        color: cs.onPrimaryContainer,
+                      ),
+              ),
+              const SizedBox(height: 20),
+              Text(
+                user?.displayName ?? 'Family member',
+                style: tt.headlineSmall,
+              ),
+              const SizedBox(height: 4),
+              Text(
+                user?.email ?? '',
+                style: tt.bodyMedium?.copyWith(
+                  color: cs.onSurface.withValues(alpha: 0.6),
+                ),
+              ),
+              const SizedBox(height: 32),
+
+              // Settings cards
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: Column(
+                    children: [
+                      _ProfileTile(
+                        icon: Icons.eco_outlined,
+                        title: 'About ShashinMori',
+                        subtitle: 'Your family photo forest',
+                        onTap: () {},
+                      ),
+                      Divider(
+                        indent: 56,
+                        height: 1,
+                        color: cs.outlineVariant.withValues(alpha: 0.2),
+                      ),
+                      _ProfileTile(
+                        icon: Icons.storage_outlined,
+                        title: 'Storage',
+                        subtitle: 'View storage usage',
+                        onTap: () {},
+                      ),
+                      Divider(
+                        indent: 56,
+                        height: 1,
+                        color: cs.outlineVariant.withValues(alpha: 0.2),
+                      ),
+                      _ProfileTile(
+                        icon: Icons.dark_mode_outlined,
+                        title: 'Appearance',
+                        subtitle: 'Following system theme',
+                        onTap: () {},
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 12),
-                  Text(user?.displayName ?? 'Signed in'),
-                  const SizedBox(height: 8),
-                  Text(user?.email ?? ''),
-                  const SizedBox(height: 24),
-                  FilledButton.icon(
-                    onPressed: () async {
+                ),
+              ),
+              const SizedBox(height: 16),
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: _ProfileTile(
+                    icon: Icons.logout,
+                    title: 'Sign out',
+                    subtitle: 'Sign out of your account',
+                    iconColor: cs.error,
+                    onTap: () async {
                       await authRepository.signOut();
                     },
-                    icon: const Icon(Icons.logout),
-                    label: const Text('Sign out'),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 32),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SvgPicture.asset(
+                    'web/favicon.svg',
+                    width: 16,
+                    height: 16,
+                    colorFilter: ColorFilter.mode(
+                      cs.onSurface.withValues(alpha: 0.3),
+                      BlendMode.srcIn,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    'ShashinMori v1.0.0',
+                    style: tt.bodySmall?.copyWith(
+                      color: cs.onSurface.withValues(alpha: 0.3),
+                    ),
                   ),
                 ],
               ),
-            ),
+            ],
           ),
         ),
       ),
+    );
+  }
+}
+
+class _ProfileTile extends StatelessWidget {
+  const _ProfileTile({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.onTap,
+    this.iconColor,
+  });
+
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final VoidCallback onTap;
+  final Color? iconColor;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final tt = Theme.of(context).textTheme;
+
+    return ListTile(
+      leading: Icon(icon, color: iconColor ?? cs.onSurface.withValues(alpha: 0.7)),
+      title: Text(title, style: tt.bodyLarge),
+      subtitle: Text(
+        subtitle,
+        style: tt.bodySmall?.copyWith(
+          color: cs.onSurface.withValues(alpha: 0.5),
+        ),
+      ),
+      trailing: Icon(
+        Icons.chevron_right,
+        color: cs.onSurface.withValues(alpha: 0.3),
+      ),
+      onTap: onTap,
     );
   }
 }
