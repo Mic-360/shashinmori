@@ -1,9 +1,14 @@
+const path = require("path");
+
+const projectRoot = path.resolve(__dirname, "..", "..");
+
 module.exports = {
   apps: [
     {
       name: "shashinmori-api",
-      script: "dist/index.js",
-      env_file: ".env",
+      cwd: projectRoot,
+      script: path.join(projectRoot, "dist", "index.js"),
+      env_file: path.join(projectRoot, ".env"),
       env: {
         START_WORKERS: "false"
       },
@@ -14,8 +19,9 @@ module.exports = {
     },
     {
       name: "shashinmori-workers",
-      script: "dist/workers.js",
-      env_file: ".env",
+      cwd: projectRoot,
+      script: path.join(projectRoot, "dist", "workers.js"),
+      env_file: path.join(projectRoot, ".env"),
       env: {
         START_WORKERS: "true"
       },
