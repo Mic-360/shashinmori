@@ -1163,11 +1163,11 @@ class _FooterSection extends StatelessWidget {
               MouseRegion(
                 cursor: SystemMouseCursors.click,
                 child: GestureDetector(
-                  onTap: () async {
-                    final uri = Uri.parse('https://github.com/mic-360');
-                    if (await canLaunchUrl(uri)) {
-                      await launchUrl(uri);
-                    }
+                  onTap: () {
+                    launchUrl(
+                      Uri.parse('https://github.com/mic-360'),
+                      mode: LaunchMode.externalApplication,
+                    );
                   },
                   child: SvgPicture.network(
                     'https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg',
