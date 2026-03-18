@@ -32,10 +32,7 @@ class _GalleryScreenState extends ConsumerState<GalleryScreen> {
   }
 
   void _handleScroll() {
-    if (!_scrollController.hasClients) {
-      return;
-    }
-
+    if (!_scrollController.hasClients) return;
     final position = _scrollController.position;
     if (position.pixels >= position.maxScrollExtent * 0.8) {
       ref.read(galleryControllerProvider.notifier).loadMore();
@@ -43,17 +40,11 @@ class _GalleryScreenState extends ConsumerState<GalleryScreen> {
   }
 
   int _columnCount(double width) {
-    if (width >= 1400) {
-      return 5;
-    }
-    if (width >= 900) {
-      return 4;
-    }
-    if (width >= 600) {
-      return 3;
-    }
-    final orientation = MediaQuery.of(context).orientation;
-    return orientation == Orientation.landscape ? 3 : 2;
+    if (width >= 1400) return 6;
+    if (width >= 1100) return 5;
+    if (width >= 900) return 4;
+    if (width >= 600) return 3;
+    return 2;
   }
 
   @override
@@ -66,80 +57,195 @@ class _GalleryScreenState extends ConsumerState<GalleryScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final tt = Theme.of(context).textTheme;
     final state = ref.watch(galleryControllerProvider);
     final authToken = ref.watch(authTokenProvider);
 
     return LayoutBuilder(
       builder: (context, constraints) {
         final columns = _columnCount(constraints.maxWidth);
+        final isWide = constraints.maxWidth >= 600;
+
+        // Search bar header (Google Photos style)
+        final searchHeader = Padding(
+          padding: EdgeInsets.fromLTRB(
+            isWide ? 24 : 16,
+            isWide ? 16 : 8,
+            isWide ? 24 : 16,
+            8,
+          ),
+          child: SearchBar(
+            hintText: 'Search your photos',
+            leading: Padding(
+              padding: const EdgeInsets.only(left: 8),
+              child: Icon(
+                Icons.search_rounded,
+                color: cs.onSurface.withValues(alpha: 0.5),
+              ),
+            ),
+            trailing: [
+              Padding(
+                padding: const EdgeInsets.only(right: 4),
+                child: IconButton(
+                  icon: CircleAvatar(
+                    radius: 16,
+                    backgroundColor: cs.primaryContainer,
+                    child: Icon(
+                      Icons.person,
+                      size: 18,
+                      color: cs.onPrimaryContainer,
+                    ),
+                  ),
+                  onPressed: () {},
+                ),
+              ),
+            ],
+            onTap: () {},
+          ),
+        );
 
         if (state.isLoading && state.photos.isEmpty) {
-          return LoadingShimmer(crossAxisCount: columns);
+          return Column(
+            children: [
+              searchHeader,
+              Expanded(child: LoadingShimmer(crossAxisCount: columns)),
+            ],
+          );
         }
 
         if (state.errorMessage != null && state.photos.isEmpty) {
-          return ErrorView(
-            message: state.errorMessage!,
-            onRetry: () => ref.read(galleryControllerProvider.notifier).loadInitial(),
+          return Column(
+            children: [
+              searchHeader,
+              Expanded(
+                child: ErrorView(
+                  message: state.errorMessage!,
+                  onRetry: () =>
+                      ref.read(galleryControllerProvider.notifier).loadInitial(),
+                ),
+              ),
+            ],
           );
         }
 
         if (authToken.isLoading && state.photos.isNotEmpty) {
-          return LoadingShimmer(crossAxisCount: columns);
+          return Column(
+            children: [
+              searchHeader,
+              Expanded(child: LoadingShimmer(crossAxisCount: columns)),
+            ],
+          );
         }
 
         final token = authToken.value;
         if (token == null) {
-          return ErrorView(
-            message: 'Your session expired. Please sign in again.',
-            onRetry: () => ref.read(galleryControllerProvider.notifier).refresh(),
+          return Column(
+            children: [
+              searchHeader,
+              Expanded(
+                child: ErrorView(
+                  message: 'Your session expired. Please sign in again.',
+                  onRetry: () =>
+                      ref.read(galleryControllerProvider.notifier).refresh(),
+                ),
+              ),
+            ],
           );
         }
 
         if (state.photos.isEmpty) {
-          return RefreshIndicator(
-            onRefresh: () => ref.read(galleryControllerProvider.notifier).refresh(),
-            child: ListView(
-              children: const [
-                SizedBox(height: 160),
-                Icon(Icons.photo_library_outlined, size: 64),
-                SizedBox(height: 16),
-                Center(child: Text('No photos yet')),
-                SizedBox(height: 8),
-                Center(child: Text('Upload the first family memory to get started.')),
-              ],
-            ),
+          return Column(
+            children: [
+              searchHeader,
+              Expanded(
+                child: RefreshIndicator(
+                  onRefresh: () =>
+                      ref.read(galleryControllerProvider.notifier).refresh(),
+                  child: ListView(
+                    children: [
+                      const SizedBox(height: 120),
+                      Icon(
+                        Icons.add_photo_alternate_outlined,
+                        size: 72,
+                        color: cs.primary.withValues(alpha: 0.4),
+                      ),
+                      const SizedBox(height: 20),
+                      Text(
+                        'No photos yet',
+                        textAlign: TextAlign.center,
+                        style: tt.titleLarge?.copyWith(
+                          color: cs.onSurface.withValues(alpha: 0.6),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Upload the first family memory\nto start growing your forest.',
+                        textAlign: TextAlign.center,
+                        style: tt.bodyMedium?.copyWith(
+                          color: cs.onSurface.withValues(alpha: 0.4),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
           );
         }
 
-        return RefreshIndicator(
-          onRefresh: () => ref.read(galleryControllerProvider.notifier).refresh(),
-          child: Stack(
-            children: [
-              PhotoGrid(
-                controller: _scrollController,
-                crossAxisCount: columns,
-                itemCount: state.photos.length,
-                itemBuilder: (context, index) {
-                  final photo = state.photos[index];
-                  final previewUrl = ref
-                      .read(galleryRepositoryProvider)
-                      .getPreviewUrl(photo.photoId, token);
-                  return PhotoCard(
-                    photo: photo,
-                    previewUrl: previewUrl,
-                  );
-                },
-              ),
-              if (state.isLoadingMore)
-                const Positioned(
-                  left: 0,
-                  right: 0,
-                  bottom: 24,
-                  child: Center(child: CircularProgressIndicator()),
+        return Column(
+          children: [
+            searchHeader,
+            Expanded(
+              child: RefreshIndicator(
+                onRefresh: () =>
+                    ref.read(galleryControllerProvider.notifier).refresh(),
+                child: Stack(
+                  children: [
+                    PhotoGrid(
+                      controller: _scrollController,
+                      crossAxisCount: columns,
+                      itemCount: state.photos.length,
+                      itemBuilder: (context, index) {
+                        final photo = state.photos[index];
+                        final previewUrl = ref
+                            .read(galleryRepositoryProvider)
+                            .getPreviewUrl(photo.photoId, token);
+                        return PhotoCard(
+                          photo: photo,
+                          previewUrl: previewUrl,
+                        );
+                      },
+                    ),
+                    if (state.isLoadingMore)
+                      Positioned(
+                        left: 0,
+                        right: 0,
+                        bottom: 16,
+                        child: Center(
+                          child: Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: cs.surfaceContainer,
+                              shape: BoxShape.circle,
+                            ),
+                            child: SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2.5,
+                                color: cs.primary,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
-            ],
-          ),
+              ),
+            ),
+          ],
         );
       },
     );
