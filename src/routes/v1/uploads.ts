@@ -71,6 +71,11 @@ function setTusCorsHeaders(reply: FastifyReply, origin?: string) {
 }
 
 export async function registerUploadRoutes(app: FastifyInstance): Promise<void> {
+  app.addContentTypeParser(
+    "application/offset+octet-stream",
+    (_request, payload, done) => done(null, payload)
+  );
+
   const tusServer = new TusServer({
     path: "/v1/uploads",
     relativeLocation: true,
