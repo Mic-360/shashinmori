@@ -8822,7 +8822,7 @@ _.d=d
 _.e=e
 _.f=f},
 aHf(a,b,c){return b},
-a7S(a,b){if(b==null)b=A.aIf(null,null)
+a7S(a,b){if(b==null)b=A.aIf(null,null,null)
 b.a=a
 return b},
 Bj(a,b){if(a instanceof A.ff)return a
@@ -8905,7 +8905,7 @@ p.sYj(a)
 p.wf$=A.o(r,q)
 p.sYM(b)
 return p},
-aIf(a,b){return new A.ajC(a,b)},
+aIf(a,b,c){return new A.ajC(b,a,c)},
 b5V(a){return a>=200&&a<300},
 x8:function x8(a,b){this.a=a
 this.b=b},
@@ -8932,9 +8932,11 @@ _.as=n
 _.at=o
 _.ax=p
 _.ay=q},
-ajC:function ajC(a,b){this.a=null
-this.b=a
-this.x=b},
+ajC:function ajC(a,b,c){var _=this
+_.a=null
+_.b=a
+_.r=b
+_.x=c},
 h9:function h9(a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,a0,a1,a2){var _=this
 _.ch=null
 _.CW=a
@@ -29946,16 +29948,15 @@ j.n(0,"Tus-Resumable","1.0.0")
 j.n(0,"Upload-Length",B.e.j(n.length))
 j.n(0,"Upload-Metadata",A.b60(c))
 s=4
-return A.t(m.a2f(e,null,null,null,null,A.a7S("POST",A.aIf(j,new A.aGb())),k),$async$Ma)
+return A.t(m.a2f(e,null,null,null,null,A.a7S("POST",A.aIf(null,j,new A.aGb())),k),$async$Ma)
 case 4:p=g.e.a2X("location")
 if(p==null||p.length===0)throw A.e(A.cL("Tus server did not return an upload location."))
 o=e.a_(p)
 l=A.j2(b,l,k)
 l.n(0,"Tus-Resumable","1.0.0")
 l.n(0,"Upload-Offset","0")
-l.n(0,"Content-Type","application/offset+octet-stream")
 s=5
-return A.t(m.a2f(o,null,n,null,new A.aGc(d),A.a7S("PATCH",A.aIf(l,new A.aGd())),k),$async$Ma)
+return A.t(m.a2f(o,null,n,null,new A.aGc(d),A.a7S("PATCH",A.aIf("application/offset+octet-stream",l,new A.aGd())),k),$async$Ma)
 case 5:k=g.e.a2X("x-upload-id")
 if(k==null)l=o.gpE().length!==0?B.b.ga2(o.gpE()):o.j(0)
 else l=k
@@ -48202,44 +48203,46 @@ k===$&&A.a()
 j=A.aET(k,m)
 k=b3.b
 if(k!=null)j.L(0,k)
+k=b3.r
+if(k!=null)j.n(0,"content-type",k)
 i=j.i(0,"content-type")
-k=a7.y
-k===$&&A.a()
-h=A.aO1(k,n,m)
+h=a7.y
+h===$&&A.a()
+g=A.aO1(h,n,m)
 n=b3.a
 if(n==null){n=a7.a
-n===$&&A.a()}g=n.toUpperCase()
+n===$&&A.a()}f=n.toUpperCase()
 n=a7.BH$
 n===$&&A.a()
 m=a7.c
 m===$&&A.a()
-k=a7.BI$
-f=a7.d
-e=a7.e
-d=a7.r
-d===$&&A.a()
-c=b3.x
-if(c==null){c=a7.w
-c===$&&A.a()}b=a7.x
-b===$&&A.a()
-a=a7.z
+h=a7.BI$
+e=a7.d
+d=a7.e
+c=a7.r
+c===$&&A.a()
+b=b3.x
+if(b==null){b=a7.w
+b===$&&A.a()}a=a7.x
 a===$&&A.a()
-a0=a7.Q
+a0=a7.z
 a0===$&&A.a()
-a1=a7.as
+a1=a7.Q
 a1===$&&A.a()
-a2=a7.at
-a3=a7.ax
-a4=a7.ay
-a4===$&&A.a()
-a5=i==null?null:i
-a7=a5==null?A.ad(a7.b.i(0,"content-type")):a5
-a6=new A.h9(b0,a8,a9,b1,b2,$,$,null,g,m,f,e,d,c,b,h,a,a0,a1,a2,a3,a4)
-a6.Pz(a7,h,a,j,a4,a0,g,a1,m,b,e,a2,a3,d,f,c)
+a2=a7.as
+a2===$&&A.a()
+a3=a7.at
+a4=a7.ax
+a5=a7.ay
+a5===$&&A.a()
+k=i==null?k:i
+a7=k==null?A.ad(a7.b.i(0,"content-type")):k
+a6=new A.h9(b0,a8,a9,b1,b2,$,$,null,f,m,e,d,c,b,a,g,a0,a1,a2,a3,a4,a5)
+a6.Pz(a7,g,a0,j,a5,a1,f,a2,m,a,d,a3,a4,c,e,b)
 a6.ch=o
 a6.wf$=l
 a6.sYj(n)
-a6.sYM(k)
+a6.sYM(h)
 q=p.Bu(a6,b5)
 s=1
 break
