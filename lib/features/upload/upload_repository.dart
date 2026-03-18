@@ -9,7 +9,7 @@ import '../../core/config.dart';
 import '../../shared/models/app_error.dart';
 import 'upload_transport_stub.dart'
     if (dart.library.io) 'upload_transport_io.dart'
-    if (dart.library.html) 'upload_transport_web.dart' as transport;
+    if (dart.library.js_interop) 'upload_transport_web.dart' as transport;
 
 class UploadStatus {
   const UploadStatus({
