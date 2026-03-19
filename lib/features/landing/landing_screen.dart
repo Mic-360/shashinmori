@@ -437,7 +437,7 @@ class _FeatureCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final tt = Theme.of(context).textTheme;
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     return Container(
       decoration: BoxDecoration(
         color: isDark ? const Color(0xFF1A1F1C).withValues(alpha: 0.6) : Colors.white.withValues(alpha: 0.6),
@@ -473,7 +473,7 @@ class _FeatureCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 24),
                 Text(
-                  data.title, 
+                  data.title,
                   style: tt.headlineSmall?.copyWith(fontWeight: FontWeight.w600),
                 ),
                 const SizedBox(height: 12),
@@ -1160,23 +1160,23 @@ class _FooterSection extends StatelessWidget {
               ),
               const SizedBox(height: 24),
               // GitHub Logo linked to URL
-              MouseRegion(
-                cursor: SystemMouseCursors.click,
-                child: GestureDetector(
-                  onTap: () {
-                    launchUrl(
-                      Uri.parse('https://github.com/mic-360'),
-                      mode: LaunchMode.externalApplication,
-                    );
-                  },
-                  child: SvgPicture.network(
-                    'https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg',
-                    width: 28,
-                    height: 28,
-                    colorFilter: const ColorFilter.mode(
-                      Colors.white54,
-                      BlendMode.srcIn,
-                    ),
+              IconButton(
+                onPressed: () async {
+                  final uri = Uri.parse(
+                      'https://github.com/Mic-360/shashinmori');
+                  if (await canLaunchUrl(uri)) {
+                    await launchUrl(uri,
+                        mode: LaunchMode.platformDefault);
+                  }
+                },
+                tooltip: 'View on GitHub',
+                icon: SvgPicture.asset(
+                  'assets/github.svg',
+                  width: 28,
+                  height: 28,
+                  colorFilter: const ColorFilter.mode(
+                    Colors.white54,
+                    BlendMode.srcIn,
                   ),
                 ),
               ),

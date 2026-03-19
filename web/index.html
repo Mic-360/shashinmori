@@ -1,47 +1,93 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
   <head>
     <base href="$FLUTTER_BASE_HREF">
 
     <meta charset="UTF-8">
     <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Primary Meta Tags -->
+    <title>ShashinMori - Revive Your Old Pixel for Unlimited Photo Storage</title>
+    <meta name="title" content="ShashinMori - Revive Your Old Pixel for Unlimited Photo Storage">
     <meta name="description"
-      content="Capture and cherish your family's precious moments in the ShashinMori digital forest. Simple, secure, and beautiful photo sharing.">
-    <meta name="keywords" content="photo gallery, family memories, shashinmori, photo storage, private gallery">
+      content="Turn your old Pixel device into an unlimited Google Photos backup server. Upload photos seamlessly, auto-purge originals after backup, and preview your memories — all free.">
+    <meta name="keywords"
+      content="shashinmori, pixel unlimited storage, google photos unlimited, photo backup, pixel experience rom, free photo storage, family photo gallery, photo server, unlimited original quality">
     <meta name="author" content="ShashinMori">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://shashinmori-web.bhaumicsingh.tech/">
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://shashinmori.app/">
-    <meta property="og:title" content="ShashinMori - Your Family's Photo Forest">
+    <meta property="og:url" content="https://shashinmori-web.bhaumicsingh.tech/">
+    <meta property="og:site_name" content="ShashinMori">
+    <meta property="og:locale" content="en_US">
+    <meta property="og:title" content="ShashinMori - Revive Your Old Pixel for Unlimited Photo Storage">
     <meta property="og:description"
-      content="Capture and cherish your family's precious moments in the ShashinMori digital forest.">
-    <meta property="og:image" content="icons/web-app-manifest-512x512.png">
+      content="Turn your old Pixel device into an unlimited Google Photos backup server. Upload photos seamlessly, auto-purge originals after backup, and preview your memories.">
+    <meta property="og:image" content="https://shashinmori-web.bhaumicsingh.tech/banner.png">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="ShashinMori - Your Family's Photo Forest">
 
     <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://shashinmori.app/">
-    <meta property="twitter:title" content="ShashinMori - Your Family's Photo Forest">
-    <meta property="twitter:description"
-      content="Capture and cherish your family's precious moments in the ShashinMori digital forest.">
-    <meta property="twitter:image" content="icons/web-app-manifest-512x512.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://shashinmori-web.bhaumicsingh.tech/">
+    <meta name="twitter:title" content="ShashinMori - Revive Your Old Pixel for Unlimited Photo Storage">
+    <meta name="twitter:description"
+      content="Turn your old Pixel device into an unlimited Google Photos backup server. Upload photos seamlessly, auto-purge originals after backup, and preview your memories.">
+    <meta name="twitter:image" content="https://shashinmori-web.bhaumicsingh.tech/banner.png">
+    <meta name="twitter:image:alt" content="ShashinMori - Your Family's Photo Forest">
 
+    <!-- Theme & PWA -->
     <meta name="theme-color" content="#1B3A2D">
     <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="ShashinMori">
 
+    <!-- Favicons -->
     <link rel="icon" type="image/png" href="icons/favicon-96x96.png" sizes="96x96">
     <link rel="icon" type="image/svg+xml" href="icons/favicon.svg">
     <link rel="shortcut icon" href="icons/favicon.ico">
     <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
     <link rel="manifest" href="manifest.json">
 
-    <title>ShashinMori - Your Family's Photo Forest</title>
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "ShashinMori",
+      "alternateName": "写真森り",
+      "url": "https://shashinmori-web.bhaumicsingh.tech/",
+      "description": "Turn your old Pixel device into an unlimited Google Photos backup server. Upload photos seamlessly, auto-purge originals after backup, and preview your memories.",
+      "applicationCategory": "PhotographyApplication",
+      "operatingSystem": "Web, Android",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Unlimited original quality photo storage via Google Photos",
+        "Background uploads to Pixel device backend",
+        "Auto-purge after backup confirmation",
+        "Lightweight preview gallery",
+        "Multi-user support with Firestore",
+        "TUS resumable uploads"
+      ],
+      "screenshot": "https://shashinmori-web.bhaumicsingh.tech/banner.png",
+      "image": "https://shashinmori-web.bhaumicsingh.tech/icons/favicon.svg"
+    }
+    </script>
   </head>
 
   <body>
+    <noscript>ShashinMori requires JavaScript to run. Please enable JavaScript in your browser settings.</noscript>
     <script src="flutter_bootstrap.js" async></script>
   </body>
 
