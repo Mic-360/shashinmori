@@ -48,5 +48,5 @@ flutter:
   uses-material-design: true
   assets:
     - assets/favicon.svg
+    - assets/favicon-96x96.png
     - assets/github.svg
-
