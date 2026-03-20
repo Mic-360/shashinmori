@@ -206,6 +206,7 @@ class _HeroSection extends StatelessWidget {
             'assets/favicon-96x96.png',
             width: 300,
             height: 300,
+            fit: BoxFit.contain,
             filterQuality: FilterQuality.medium,
           ),
         ),
